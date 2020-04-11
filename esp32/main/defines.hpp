@@ -45,3 +45,5 @@
 #define LDR_SENSOR_PIN     15
 
 int threshold = 40;
+#define PI 3.14159265
+#define MAX_BRIGHTNESS 100

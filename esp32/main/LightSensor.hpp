@@ -35,7 +35,10 @@ public:
     }
 
     float getCurrentTimeInLoop() {
-        return millis() - oldTime;
+        if(loopTime != 0)
+          return (millis() - oldTime) % loopTime;
+        else
+          return 0;
     }
 
 };

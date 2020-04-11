@@ -1,20 +1,27 @@
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.Arrays;
 
 public class main {
     public static void main(String[] args) {
         System.out.println("Hello World!"); // Display the string.
         try {
-            printArray(ImageToPixels.getPixelsArray("30.jpg"));
+            printArray(ImageToPixels.getPixelsArray("pacman128.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public static void printArray(int[][] a) {
+        System.out.println(a.length);
+        System.out.print("{");
         for (int[] row : a) {
-            System.out.println(Arrays.toString(row));
+            System.out.print("{");
+            for (int i = 0; i < row.length; i++) {
+                System.out.print(row[i]);
+                if (i != row.length - 1)
+                    System.out.print(", ");
+            }
+            System.out.println("},");
         }
+        System.out.print("}");
     }
 }
