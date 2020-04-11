@@ -10,7 +10,7 @@
  This example code is in the public domain.
  */
 
-#define NUM_OF_LED 10
+#define NUM_OF_LEDS 10
 
 // use first channel of 16 channels (started from zero)
 #define LEDC_CHANNEL_0     0

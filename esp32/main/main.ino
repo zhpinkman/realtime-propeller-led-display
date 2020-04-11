@@ -2,6 +2,7 @@
 #include "analogWriteHandler.hpp"
 #include "LightSensor.hpp"
 
+int ledChannels[] = {LEDC_CHANNEL_0, LEDC_CHANNEL_1, LEDC_CHANNEL_2, LEDC_CHANNEL_3, LEDC_CHANNEL_4, LEDC_CHANNEL_5, LEDC_CHANNEL_6, LEDC_CHANNEL_7, LEDC_CHANNEL_8, LEDC_CHANNEL_9};
 LightSensor* lightSensor;
 
 void gotTouch() {
@@ -11,16 +12,10 @@ void gotTouch() {
 void setup() {
     Serial.begin(9600);
     // Setup timer and attach timer to a led pin
-    ledcSetup(LEDC_CHANNEL_0, LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
-    ledcSetup(LEDC_CHANNEL_1, LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
-    ledcSetup(LEDC_CHANNEL_2, LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
-    ledcSetup(LEDC_CHANNEL_3, LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
-    ledcSetup(LEDC_CHANNEL_4, LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
-    ledcSetup(LEDC_CHANNEL_5, LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
-    ledcSetup(LEDC_CHANNEL_6, LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
-    ledcSetup(LEDC_CHANNEL_7, LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
-    ledcSetup(LEDC_CHANNEL_8, LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
-    ledcSetup(LEDC_CHANNEL_9, LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
+    
+    for(int i = 0; i < NUM_OF_LEDS; i++){
+      ledcSetup(ledChannels[i], LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
+    }
     ledcAttachPin(LED_PIN0, LEDC_CHANNEL_0);
     ledcAttachPin(LED_PIN1, LEDC_CHANNEL_1);
     ledcAttachPin(LED_PIN2, LEDC_CHANNEL_2);
@@ -49,15 +44,8 @@ void loop() {
         brightness = 10;
     }
 
-    ledcAnalogWrite(LEDC_CHANNEL_0, brightness);
-    ledcAnalogWrite(LEDC_CHANNEL_1, brightness);
-    ledcAnalogWrite(LEDC_CHANNEL_2, brightness);
-    ledcAnalogWrite(LEDC_CHANNEL_3, brightness);
-    ledcAnalogWrite(LEDC_CHANNEL_4, brightness);
-    ledcAnalogWrite(LEDC_CHANNEL_5, brightness);
-    ledcAnalogWrite(LEDC_CHANNEL_6, brightness);
-    ledcAnalogWrite(LEDC_CHANNEL_7, brightness);
-    ledcAnalogWrite(LEDC_CHANNEL_8, brightness);
-    ledcAnalogWrite(LEDC_CHANNEL_9, brightness);
+    for(int i = 0; i < NUM_OF_LEDS; i++){
+      ledcAnalogWrite(ledChannels[i], brightness);
+    }
     //  delay(5);
 }
