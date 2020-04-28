@@ -1,4 +1,4 @@
-package com.example.front_sample;
+package com.example.front_sample.activities;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.example.front_sample.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;

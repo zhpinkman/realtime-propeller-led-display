@@ -1,10 +1,12 @@
-package com.example.front_sample;
+package com.example.front_sample.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import com.example.front_sample.R;
 
 public class MainActivity extends AppCompatActivity {
 
