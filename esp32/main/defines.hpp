@@ -46,4 +46,4 @@
 
 int threshold = 40;
 #define PI 3.14159265
-#define MAX_BRIGHTNESS 100
+#define MAX_BRIGHTNESS 150

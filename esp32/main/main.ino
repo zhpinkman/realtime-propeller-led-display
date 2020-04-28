@@ -1,7 +1,13 @@
 #include <math.h>
+#include "WiFi.h"
+#include "AsyncUDP.h"
+
 #include "defines.hpp"
 #include "analogWriteHandler.hpp"
 #include "LightSensor.hpp"
+
+const char * ssid = "DM-JoinMe";
+const char * password = "87654321";
 
 #define PIC_SIZE 128
 //int pic[30][30] = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -224,8 +230,79 @@ void setLeds(long currentTimeInLoop, long loopTime) {
   }
 }
 
+AsyncUDP udp;
+TaskHandle_t BroadcastTask;
+
+void startUDP() {
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(ssid, password);
+    if (WiFi.waitForConnectResult() != WL_CONNECTED) {
+        Serial.println("WiFi Failed");
+        while(1) {
+            delay(1000);
+            Serial.println(WiFi.waitForConnectResult());
+            if(WiFi.waitForConnectResult() == WL_CONNECTED){
+              break;
+            }
+        }
+    }
+    if(udp.listen(8000)) {
+        Serial.print("UDP Listening on IP: ");
+        Serial.println(WiFi.localIP());
+        udp.onPacket([](AsyncUDPPacket packet) {
+          
+            Serial.print("UDPCore: ");
+            Serial.println(xPortGetCoreID());
+            
+            Serial.print("UDP Packet Type: ");
+            Serial.print(packet.isBroadcast()?"Broadcast":packet.isMulticast()?"Multicast":"Unicast");
+            Serial.print(", From: ");
+            Serial.print(packet.remoteIP());
+            Serial.print(":");
+            Serial.print(packet.remotePort());
+            Serial.print(", To: ");
+            Serial.print(packet.localIP());
+            Serial.print(":");
+            Serial.print(packet.localPort());
+            Serial.print(", Length: ");
+            Serial.print(packet.length());
+            Serial.print(", Data: ");
+            Serial.write(packet.data(), packet.length());
+            Serial.println();
+            //reply to the client
+            packet.printf("Got %u bytes of data", packet.length());
+        });
+    }else{
+      Serial.println("Failllll");
+    }
+}
+
+void setupTask(){
+  xTaskCreatePinnedToCore(
+                    BroadcastTaskCode,   /* Task function. */
+                    "Task1",     /* name of task. */
+                    10000,       /* Stack size of task */
+                    NULL,        /* parameter of the task */
+                    1,           /* priority of the task */
+                    &BroadcastTask,      /* Task handle to keep track of created task */
+                    0);          /* pin task to core 0 */
+}
+
+void BroadcastTaskCode( void * pvParameters ){
+  Serial.print("Task1 running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    udp.broadcastTo(String(millis()).c_str(), 7000);
+    delay(1000);
+  } 
+}
+
+
 void setup() {
-//    Serial.begin(9600);
+    Serial.begin(115200);
+    startUDP();
+    setupTask();
     // Setup timer and attach timer to a led pin
     
     for(int i = 0; i < NUM_OF_LEDS; i++){
@@ -257,9 +334,14 @@ void loop() {
 //        brightness = 10;
 //    }
 
-    setLeds(currentTimeInLoop, loopTime);
+//    setLeds(currentTimeInLoop, loopTime);
 //    for(int i = 0; i < NUM_OF_LEDS; i++){
 //      ledcAnalogWrite(ledChannels[i], brightness);
 //    }
-    //  delay(5);
+      delay(1000);
+      Serial.println(String(millis()));
+      
+      Serial.println(String(millis()));
+      Serial.print("LoopCore: ");
+      Serial.println(xPortGetCoreID());
 }
