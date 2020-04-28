@@ -293,7 +293,11 @@ void BroadcastTaskCode( void * pvParameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    Serial.print(String(millis()));
+    Serial.println("ms");
     udp.broadcastTo(String(millis()).c_str(), 7000);
+    Serial.print(String(millis()));
+    Serial.println("ms");
     delay(1000);
   } 
 }
@@ -339,9 +343,7 @@ void loop() {
 //      ledcAnalogWrite(ledChannels[i], brightness);
 //    }
       delay(1000);
-      Serial.println(String(millis()));
       
-      Serial.println(String(millis()));
-      Serial.print("LoopCore: ");
-      Serial.println(xPortGetCoreID());
+//      Serial.print("LoopCore: ");
+//      Serial.println(xPortGetCoreID());
 }

@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-public class galleryActivity extends AppCompatActivity {
+public class GalleryActivity extends AppCompatActivity {
 
     public static final int IMAGE_GALLERY_REQUEST = 20;
 
