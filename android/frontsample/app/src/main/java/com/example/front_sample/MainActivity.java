@@ -29,4 +29,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onUDPSelect(View view) {
+        Intent intent = new Intent(this, UDPActivity.class);
+        startActivity(intent);
+    }
+
 }
