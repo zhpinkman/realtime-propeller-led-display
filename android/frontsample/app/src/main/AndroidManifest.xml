@@ -3,6 +3,8 @@
     package="com.example.front_sample">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.UDPActivity"></activity>
+        <activity android:name=".activities.UDPActivity" />
         <activity
             android:name=".activities.GalleryActivity"
             android:parentActivityName=".activities.MainActivity">

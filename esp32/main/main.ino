@@ -6,8 +6,11 @@
 #include "analogWriteHandler.hpp"
 #include "LightSensor.hpp"
 
-const char * ssid = "DM-JoinMe";
-const char * password = "87654321";
+//const char * ssid = "DM-JoinMe";
+//const char * password = "87654321";
+
+const char * ssid = "D-Link";
+const char * password = "shapanhamed";
 
 #define PIC_SIZE 128
 //int pic[30][30] = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -295,7 +298,7 @@ void BroadcastTaskCode( void * pvParameters ){
   for(;;){
     Serial.print(String(millis()));
     Serial.println("ms");
-    udp.broadcastTo(String(millis()).c_str(), 7000);
+    udp.broadcastTo(String(millis()).c_str(), 9000);
     Serial.print(String(millis()));
     Serial.println("ms");
     delay(1000);
