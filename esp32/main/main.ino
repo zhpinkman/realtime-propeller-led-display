@@ -9,9 +9,10 @@
 
 #include "res/staticPics.h"
 
-int ledChannels[] = {LEDC_CHANNEL_0, LEDC_CHANNEL_1, LEDC_CHANNEL_2, LEDC_CHANNEL_3, LEDC_CHANNEL_4, LEDC_CHANNEL_5, LEDC_CHANNEL_6, LEDC_CHANNEL_7, LEDC_CHANNEL_8, LEDC_CHANNEL_9};
-LightSensor* lightSensor;
-UDPHandler* udpHandler;
+int ledChannels[] = {LEDC_CHANNEL_0, LEDC_CHANNEL_1, LEDC_CHANNEL_2, LEDC_CHANNEL_3, LEDC_CHANNEL_4, LEDC_CHANNEL_5,
+                     LEDC_CHANNEL_6, LEDC_CHANNEL_7, LEDC_CHANNEL_8, LEDC_CHANNEL_9};
+LightSensor *lightSensor;
+UDPHandler *udpHandler;
 
 void gotTouch() {
     lightSensor->restart();
@@ -19,30 +20,29 @@ void gotTouch() {
 
 
 void setLeds(long currentTimeInLoop, long loopTime) {
-  double radian = ((float)currentTimeInLoop / (float)loopTime) * 2 * PI;
+    double radian = ((float) currentTimeInLoop / (float) loopTime) * 2 * PI;
 //  Serial.println(radian / PI * 180);
-  double baseX = cos(radian) * (double)PIC_SIZE / 2 / (double)NUM_OF_LEDS;
-  double baseY = sin(radian) * (double)PIC_SIZE / 2 / (double)NUM_OF_LEDS;
-  for(int i = 0; i < NUM_OF_LEDS; i++){
-    int x = floor(baseX * (double)i) + PIC_SIZE / 2;
-    int y = floor(baseY * (double)i) + PIC_SIZE / 2;
+    double baseX = cos(radian) * (double) PIC_SIZE / 2 / (double) NUM_OF_LEDS;
+    double baseY = sin(radian) * (double) PIC_SIZE / 2 / (double) NUM_OF_LEDS;
+    for (int i = 0; i < NUM_OF_LEDS; i++) {
+        int x = floor(baseX * (double) i) + PIC_SIZE / 2;
+        int y = floor(baseY * (double) i) + PIC_SIZE / 2;
 //    Serial.print("X: ");
 //    Serial.print(x);
 //    Serial.print(", Y: ");
 //    Serial.println(y);
-    int brightness = pic[y][x] * MAX_BRIGHTNESS / 255 ;
+        int brightness = pic[y][x] * MAX_BRIGHTNESS / 255;
 //    Serial.println(brightness);
-    ledcAnalogWrite(ledChannels[i], brightness);
-  }
+        ledcAnalogWrite(ledChannels[i], brightness);
+    }
 }
-
 
 
 void setup() {
     Serial.begin(115200);
     pinMode(LED_BUILTIN, OUTPUT);
-    for(int i = 0; i < NUM_OF_LEDS; i++){
-      ledcSetup(ledChannels[i], LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
+    for (int i = 0; i < NUM_OF_LEDS; i++) {
+        ledcSetup(ledChannels[i], LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
     }
     ledcAttachPin(LED_PIN0, LEDC_CHANNEL_0);
     ledcAttachPin(LED_PIN1, LEDC_CHANNEL_1);
@@ -79,8 +79,8 @@ void loop() {
 //    for(int i = 0; i < NUM_OF_LEDS; i++){
 //      ledcAnalogWrite(ledChannels[i], brightness);
 //    }
-      delay(1000);
-      
+    delay(1000);
+
 //      Serial.print("LoopCore: ");
 //      Serial.println(xPortGetCoreID());
 }

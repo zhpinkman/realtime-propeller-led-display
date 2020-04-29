@@ -12,17 +12,16 @@ import java.net.SocketException;
 import java.util.Date;
 
 public class UDPHandler {
-    private int broadcastPort = 9000;
-    static final int UdpServerPORT = 9000;
+    private final static int BOARD_PORT = 9000;
+    private final static int ANDROID_PORT = 9001;
     UDPServerThread udpServerThread;
-
 
     public UDPHandler() {
 
     }
 
     public void startServer() {
-        udpServerThread = new UDPServerThread(UdpServerPORT);
+        udpServerThread = new UDPServerThread(ANDROID_PORT, BOARD_PORT);
         udpServerThread.start();
     }
 

@@ -12,14 +12,15 @@ import java.util.Date;
 
 public class UDPServerThread extends Thread{
     private final static String TAG = "UDP";
-    int serverPort;
+    int androidPort, boardPort;
     DatagramSocket socket;
 
     boolean running;
 
-    public UDPServerThread(int serverPort) {
+    public UDPServerThread(int androidPort, int boardPort) {
         super();
-        this.serverPort = serverPort;
+        this.androidPort = androidPort;
+        this.boardPort = boardPort;
     }
 
     public void setRunning(boolean running){
@@ -33,7 +34,7 @@ public class UDPServerThread extends Thread{
 
         try {
 //            updateState("Starting UDP Server");
-            socket = new DatagramSocket(serverPort);
+            socket = new DatagramSocket(this.androidPort);
 
 //            updateState("UDP Server is running");
             Log.e(TAG, "UDP Server is running");
@@ -56,9 +57,8 @@ public class UDPServerThread extends Thread{
                 String dString = new Date().toString() + "\n"
                         + "Your address " + ((InetAddress) address).toString() + ":" + String.valueOf(port);
                 buf = dString.getBytes();
-                packet = new DatagramPacket(buf, buf.length, address, port);
-                socket.send(packet);
-
+                packet = new DatagramPacket(buf, buf.length, address, this.boardPort);
+//                socket.send(packet);
             }
 
             Log.e(TAG, "UDP Server ended");

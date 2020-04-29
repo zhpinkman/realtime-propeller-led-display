@@ -20,7 +20,7 @@ public class main {
                 if (i != row.length - 1)
                     System.out.print(", ");
             }
-            System.out.println("},");
+            System.out.print("},");
         }
         System.out.print("}");
     }

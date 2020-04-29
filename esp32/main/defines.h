@@ -44,8 +44,19 @@
 
 #define LDR_SENSOR_PIN     15
 
-#define ON_BOARD_LED_PIN 2
+#define LED_BUILTIN 2
 
 int threshold = 40;
 #define PI 3.14159265
 #define MAX_BRIGHTNESS 150
+
+
+// NETWORK
+#define BOARD_PORT 9000
+#define ANDROID_PORT 9001
+
+
+
+
+
+    

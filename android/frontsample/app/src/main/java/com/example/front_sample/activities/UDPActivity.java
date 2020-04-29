@@ -6,7 +6,10 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.front_sample.R;
+import com.example.front_sample.utils.HttpHandler.HttpHandler;
 import com.example.front_sample.utils.udp.UDPHandler;
+
+import java.io.IOException;
 
 public class UDPActivity extends AppCompatActivity {
     private UDPHandler udpHandler;
@@ -17,7 +20,11 @@ public class UDPActivity extends AppCompatActivity {
         final Button button = findViewById(R.id.button5);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
+                try {
+                    new HttpHandler();
+                } catch (IOException ioe) {
+                    System.err.println("Couldn't start server:\n" + ioe);
+                }
             }
         });
     }
