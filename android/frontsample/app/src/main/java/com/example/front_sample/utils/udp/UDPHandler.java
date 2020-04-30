@@ -10,6 +10,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Date;
+import java.util.List;
 
 public class UDPHandler {
     private final static int BOARD_PORT = 9000;
@@ -32,6 +33,10 @@ public class UDPHandler {
         }else{
             throw new Exception("Server is not running!");
         }
+    }
+
+    public void setContext(List<int[][]> newContext){
+        udpServerThread.setContext(newContext);
     }
 
 //    private void updateState(final String state){

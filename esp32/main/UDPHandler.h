@@ -25,28 +25,30 @@ private:
 
         for (;;) {
             Serial.println(msg);
-//            Serial.print(String(millis()));
-//            Serial.println("ms");
+            Serial.print(String(millis()));
+            Serial.println("ms - START BROADCAST");
             broadcastUDP.broadcastTo(String(millis()).c_str(), ANDROID_PORT);
 
-            long m = millis();
-            HTTPClient http;
-            http.begin("http://192.168.1.7:8080/"); //HTTP
-            // start connection and send HTTP header
-            int httpCode = http.GET();
-            Serial.print(String(millis()-m));
-            Serial.println("ms");
-            // httpCode will be negative on error
-            if(httpCode > 0) {
-                // file found at server
-                if(httpCode == HTTP_CODE_OK) {
-                    String payload = http.getString();
-                    Serial.println(payload);
-                }
-            } else {
-                Serial.println(http.errorToString(httpCode).c_str());
-            }
-            http.end();
+//            long m = millis();
+//            HTTPClient http;
+//            http.begin("http://192.168.1.7:8080/"); //HTTP
+//            // start connection and send HTTP header
+//            int httpCode = http.GET();
+//            Serial.print(String(millis()-m));
+//            Serial.println("ms");
+//            // httpCode will be negative on error
+//            if(httpCode > 0) {
+//                // file found at server
+//                if(httpCode == HTTP_CODE_OK) {
+//                    String payload = http.getString();
+//                    Serial.print(sizeof(payload));
+//                    Serial.println("B");
+//                    Serial.println(payload);
+//                }
+//            } else {
+//                Serial.println(http.errorToString(httpCode).c_str());
+//            }
+//            http.end();
             
             delay(3000);
         }
@@ -79,7 +81,9 @@ public:
             Serial.print("UDP Listening on IP: ");
             Serial.println(WiFi.localIP());
             udp.onPacket([](AsyncUDPPacket packet) {
-
+                Serial.print(String(millis()));
+                Serial.println("ms - ANSWER RECEIVED");
+            
                 Serial.print("UDPCore: ");
                 Serial.println(xPortGetCoreID());
 

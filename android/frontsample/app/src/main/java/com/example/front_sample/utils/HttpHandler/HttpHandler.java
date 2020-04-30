@@ -3,14 +3,13 @@ package com.example.front_sample.utils.HttpHandler;
 import com.example.front_sample.utils.Utils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Properties;
 
 import fi.iki.elonen.NanoHTTPD;
 
 public class HttpHandler extends NanoHTTPD {
+    private String context = "";
+
     public HttpHandler() throws IOException {
         super(8080);
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
@@ -18,10 +17,12 @@ public class HttpHandler extends NanoHTTPD {
         System.out.println(Utils.getIPAddress(true));
     }
 
+    public void setContext(String newContext) {
+        this.context = newContext;
+    }
+
     @Override
     public Response serve(IHTTPSession session) {
-
-
         String msg = "HI";
         Map<String, String> params = session.getParms();
         if (params.get("username") == null) {
@@ -29,17 +30,7 @@ public class HttpHandler extends NanoHTTPD {
         } else {
             msg += "<p>Hello, " + params.get("username") + "!</p>";
         }
-
-        Properties properties = new Properties();
-        InputStream inputStream = getClass().getResourceAsStream("pic");
-        try {
-            properties.load(inputStream);
-            String a = properties.getProperty("pic");
-            return newFixedLengthResponse(msg + "</body></html>\n" + a);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return newFixedLengthResponse(msg + "</body></html>\n");
+        return newFixedLengthResponse(msg + "</body></html>\n" + this.context);
 
     }
 

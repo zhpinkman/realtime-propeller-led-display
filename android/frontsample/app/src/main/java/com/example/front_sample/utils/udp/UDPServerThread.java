@@ -2,29 +2,38 @@ package com.example.front_sample.utils.udp;
 
 import android.util.Log;
 
+import com.example.front_sample.utils.Utils;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class UDPServerThread extends Thread{
     private final static String TAG = "UDP";
-    int androidPort, boardPort;
-    DatagramSocket socket;
+    private int androidPort, boardPort;
+    private DatagramSocket socket;
+    private boolean running;
+    private List<int[][]> context = new ArrayList<>();
 
-    boolean running;
-
-    public UDPServerThread(int androidPort, int boardPort) {
+    UDPServerThread(int androidPort, int boardPort) {
         super();
         this.androidPort = androidPort;
         this.boardPort = boardPort;
+        this.context.add(new int[25][25]);
     }
 
-    public void setRunning(boolean running){
+    void setRunning(boolean running){
         this.running = running;
+    }
+
+    void setContext(List<int[][]> newContext) {
+        this.context = newContext;
     }
 
     @Override
@@ -40,35 +49,38 @@ public class UDPServerThread extends Thread{
             Log.e(TAG, "UDP Server is running");
 
             while(running){
-                byte[] buf = new byte[256];
+                byte[] buf = new byte[100];
 
                 // receive request
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);     //this code block the program flow
 
-                // send the response to the client at "address" and "port"
+                String sentence = new String(packet.getData(), 0, packet.getLength());
                 InetAddress address = packet.getAddress();
                 int port = packet.getPort();
-
-                String sentence = new String( packet.getData(), 0,
-                        packet.getLength() );
                 Log.e(TAG, "Request from: " + address + ":" + port + " -> " + sentence + "\n");
 
-                String dString = new Date().toString() + "\n"
-                        + "Your address " + ((InetAddress) address).toString() + ":" + String.valueOf(port);
-                buf = dString.getBytes();
-                packet = new DatagramPacket(buf, buf.length, address, this.boardPort);
-//                socket.send(packet);
+                if(!sentence.contains("Got")) {
+                    System.out.println("HERE");
+                    // send the response to the client at "address" and "port"
+                    String dString = System.currentTimeMillis() + "\n"
+                            + "Your address " + ((InetAddress) address).toString() + ":" + String.valueOf(port);
+                    byte[] byteBuf = Utils.int2dArrToByteArr(this.context.get(0));
+                    if(this.context.size() > 1){
+                        this.context.remove(0);
+                    }
+                    System.out.println(Arrays.toString(byteBuf));
+                    buf = dString.getBytes();
+                    packet = new DatagramPacket(byteBuf, byteBuf.length, address, this.boardPort);
+                    socket.send(packet);
+//                    socket.send(packet);
+                }
             }
 
             Log.e(TAG, "UDP Server ended");
 
-        } catch (SocketException e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e){
+            Log.e(TAG, e.getMessage());
             e.printStackTrace();
         } finally {
             if(socket != null){
