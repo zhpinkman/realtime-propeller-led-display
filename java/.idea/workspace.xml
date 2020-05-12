@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5951cd7a-2ba3-459e-97ac-0d6d71673357" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../android/frontsample/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../android/frontsample/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../android/frontsample/app/src/main/java/com/example/front_sample/activities/UDPActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../android/frontsample/app/src/main/java/com/example/front_sample/activities/UDPActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../android/frontsample/app/src/main/java/com/example/front_sample/utils/udp/UDPHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../android/frontsample/app/src/main/java/com/example/front_sample/utils/udp/UDPHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../android/frontsample/app/src/main/java/com/example/front_sample/utils/udp/UDPServerThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/../android/frontsample/app/src/main/java/com/example/front_sample/utils/udp/UDPServerThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../android/frontsample/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../android/frontsample/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../esp32/main/UDPHandler.h" beforeDir="false" afterPath="$PROJECT_DIR$/../esp32/main/UDPHandler.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../esp32/main/defines.h" beforeDir="false" afterPath="$PROJECT_DIR$/../esp32/main/defines.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../esp32/main/main.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../esp32/main/main.ino" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../esp32/main/res/staticPics.h" beforeDir="false" afterPath="$PROJECT_DIR$/../esp32/main/res/staticPics.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/main.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -27,8 +17,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="22" column="28" selection-start-line="22" selection-start-column="28" selection-end-line="22" selection-end-column="28" />
+            <state relative-caret-position="391">
+              <caret line="23" column="9" lean-forward="true" selection-start-line="23" selection-start-column="9" selection-end-line="23" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -70,7 +60,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -107,14 +97,14 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1586288582262" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../../06_Internet_Engineering/Internet_Engineering_Course/CA_07_mzFoodDelivery/server/CA_07_mzFoodDelivery" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -190,16 +180,18 @@
       <workItem from="1586587582694" duration="4651000" />
       <workItem from="1586684909438" duration="105000" />
       <workItem from="1588198020448" duration="618000" />
+      <workItem from="1588802262434" duration="1294000" />
+      <workItem from="1588856298558" duration="91000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8325000" />
+    <option name="totallyTimeSpent" value="9710000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26332623" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26865673" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -267,8 +259,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" column="28" selection-start-line="22" selection-start-column="28" selection-end-line="22" selection-end-column="28" />
+        <state relative-caret-position="391">
+          <caret line="23" column="9" lean-forward="true" selection-start-line="23" selection-start-column="9" selection-end-line="23" selection-end-column="9" />
         </state>
       </provider>
     </entry>

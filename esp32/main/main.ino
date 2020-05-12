@@ -58,7 +58,7 @@ void setup() {
     udpHandler = new UDPHandler();
     digitalWrite(LED_BUILTIN, HIGH);
     udpHandler->startUDPServer();
-    udpHandler->startBroadcastTask();
+//    udpHandler->startBroadcastTask();
     digitalWrite(LED_BUILTIN, LOW);
 
     lightSensor = new LightSensor(LDR_SENSOR_PIN);
@@ -75,10 +75,11 @@ void loop() {
 //        brightness = 10;
 //    }
 
-//    setLeds(currentTimeInLoop, loopTime);
+    setLeds(currentTimeInLoop, loopTime);
 //    for(int i = 0; i < NUM_OF_LEDS; i++){
 //      ledcAnalogWrite(ledChannels[i], brightness);
 //    }
+    udpHandler->broadcast(String(lightSensor->getLoopTime()));
     delay(1000);
 
 //      Serial.print("LoopCore: ");

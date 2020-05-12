@@ -15,16 +15,16 @@ private:
     
     const char * ssid = "D-Link";
     const char * password = "shapanhamed";
-    char* msg = "Message";
+    
 
-    static void BroadcastTaskCode(void *pvParameters) {
-        char* msg = (char*)pvParameters;
+    static void BroadcastForeverTaskCode(void *pvParameters) {
+        char* msg2 = (char*)pvParameters;
         AsyncUDP broadcastUDP;
         Serial.print("Task1 running on core ");
         Serial.println(xPortGetCoreID());
 
         for (;;) {
-            Serial.println(msg);
+            Serial.println(msg2);
             Serial.print(String(millis()));
             Serial.println("ms - START BROADCAST");
             broadcastUDP.broadcastTo(String(millis()).c_str(), ANDROID_PORT);
@@ -52,6 +52,22 @@ private:
             
             delay(3000);
         }
+        vTaskDelete( NULL );
+    }
+
+    static void BroadcastTaskCode(void *pvParameters) {
+        char* msg = (char*)pvParameters;
+        AsyncUDP broadcastUDP;
+        Serial.print("BroadcastTaskCode running on core ");
+        Serial.println(xPortGetCoreID());
+
+        
+        Serial.print(String(millis()));
+        Serial.print("ms - START BROADCAST: ");
+        Serial.println(msg);
+        broadcastUDP.broadcastTo(msg, ANDROID_PORT);
+
+        delay(3000);
         vTaskDelete( NULL );
     }
 
@@ -111,13 +127,29 @@ public:
     }
 
     void startBroadcastTask() {
-        TaskHandle_t BroadcastTask;
+        const char* msg = "Message sending on Broadcast";
+        TaskHandle_t BroadcastForeverTask;
         xTaskCreatePinnedToCore(
-                BroadcastTaskCode,   /* Task function. */
+                BroadcastForeverTaskCode,   /* Task function. */
                 "Task1",     /* name of task. */
                 10000,       /* Stack size of task */
 //                NULL,        /* parameter of the task */
                 (void*)msg,
+                1,           /* priority of the task */
+                &BroadcastForeverTask,      /* Task handle to keep track of created task */
+                0);          /* pin task to core 0 */
+    }
+
+    void broadcast(String messageStr) {
+        char messageCopyCharPointer[messageStr.length()];
+        messageStr.toCharArray(messageCopyCharPointer, messageStr.length()+1);
+        TaskHandle_t BroadcastTask;
+        xTaskCreatePinnedToCore(
+                BroadcastTaskCode,   /* Task function. */
+                "broadcastTask",     /* name of task. */
+                1000,       /* Stack size of task */
+//                NULL,        /* parameter of the task */
+                (void*)messageCopyCharPointer,
                 1,           /* priority of the task */
                 &BroadcastTask,      /* Task handle to keep track of created task */
                 0);          /* pin task to core 0 */
