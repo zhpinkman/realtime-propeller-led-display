@@ -55,6 +55,7 @@ int threshold = 40;
 
 #define MAX_FRAMES_ARRAY_LEN 30
 #define MAX_FRAME_WIDTH 30  // Caution Mohsen: this amount times frames array size will be allocated. (SRAM has 512KiB)
+#define MAX_DEGREE 360  // How accurate frames are in terms of angle (NUM_OF_LEDS determines linear accuracy)
 
 // NETWORK
 #define BOARD_PORT 9000

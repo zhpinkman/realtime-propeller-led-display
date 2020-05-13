@@ -72,6 +72,21 @@ public:
             ledcAnalogWrite(ledChannels[i], brightness);
         }
     }
+
+    void setLedsByAngularFrames(long currentTimeInLoop, long loopTime, int frame[MAX_DEGREE][NUM_OF_LEDS], int angleAccuracy = MAX_DEGREE) {
+        double degree = ((float) currentTimeInLoop / (float) loopTime) * angleAccuracy;
+        int degreeInt = (int) degreeInt;
+        if(degreeInt < 0 || degreeInt > angleAccuracy){
+            degreeInt = 0;
+        }
+        for (int i = 0; i < NUM_OF_LEDS; i++) {
+            int brightness = frame[degreeInt][i] * MAX_BRIGHTNESS / 255;
+            if(brightness < 0 || brightness > 255){
+                brightness = 5;
+            }
+            ledcAnalogWrite(ledChannels[i], brightness);
+        }
+    }
 };
 
 #endif //MAIN_LEDS_H
