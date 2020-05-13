@@ -6,54 +6,27 @@
 #include "analogWriteHandler.h"
 #include "LightSensor.h"
 #include "UDPHandler.h"
+#include "LEDs.h"
 
-#include "res/staticPics.h"
 
-int ledChannels[] = {LEDC_CHANNEL_0, LEDC_CHANNEL_1, LEDC_CHANNEL_2, LEDC_CHANNEL_3, LEDC_CHANNEL_4, LEDC_CHANNEL_5,
-                     LEDC_CHANNEL_6, LEDC_CHANNEL_7, LEDC_CHANNEL_8, LEDC_CHANNEL_9};
+
 LightSensor *lightSensor;
 UDPHandler *udpHandler;
+LEDs *leds;
 
 void gotTouch() {
     lightSensor->restart();
 }
 
 
-void setLeds(long currentTimeInLoop, long loopTime) {
-    double radian = ((float) currentTimeInLoop / (float) loopTime) * 2 * PI;
-//  Serial.println(radian / PI * 180);
-    double baseX = cos(radian) * (double) PIC_SIZE / 2 / (double) NUM_OF_LEDS;
-    double baseY = sin(radian) * (double) PIC_SIZE / 2 / (double) NUM_OF_LEDS;
-    for (int i = 0; i < NUM_OF_LEDS; i++) {
-        int x = floor(baseX * (double) i) + PIC_SIZE / 2;
-        int y = floor(baseY * (double) i) + PIC_SIZE / 2;
-//    Serial.print("X: ");
-//    Serial.print(x);
-//    Serial.print(", Y: ");
-//    Serial.println(y);
-        int brightness = pic[y][x] * MAX_BRIGHTNESS / 255;
-//    Serial.println(brightness);
-        ledcAnalogWrite(ledChannels[i], brightness);
-    }
-}
+
 
 
 void setup() {
     Serial.begin(115200);
     pinMode(LED_BUILTIN, OUTPUT);
-    for (int i = 0; i < NUM_OF_LEDS; i++) {
-        ledcSetup(ledChannels[i], LEDC_BASE_FREQ, LEDC_TIMER_13_BIT);
-    }
-    ledcAttachPin(LED_PIN0, LEDC_CHANNEL_0);
-    ledcAttachPin(LED_PIN1, LEDC_CHANNEL_1);
-    ledcAttachPin(LED_PIN2, LEDC_CHANNEL_2);
-    ledcAttachPin(LED_PIN3, LEDC_CHANNEL_3);
-    ledcAttachPin(LED_PIN4, LEDC_CHANNEL_4);
-    ledcAttachPin(LED_PIN5, LEDC_CHANNEL_5);
-    ledcAttachPin(LED_PIN6, LEDC_CHANNEL_6);
-    ledcAttachPin(LED_PIN7, LEDC_CHANNEL_7);
-    ledcAttachPin(LED_PIN8, LEDC_CHANNEL_8);
-    ledcAttachPin(LED_PIN9, LEDC_CHANNEL_9);
+    leds = new LEDs();
+    leds->init();
 
     udpHandler = new UDPHandler();
     digitalWrite(LED_BUILTIN, HIGH);
@@ -75,7 +48,7 @@ void loop() {
 //        brightness = 10;
 //    }
 
-    setLeds(currentTimeInLoop, loopTime);
+    leds->setLeds(currentTimeInLoop, loopTime);
 //    for(int i = 0; i < NUM_OF_LEDS; i++){
 //      ledcAnalogWrite(ledChannels[i], brightness);
 //    }

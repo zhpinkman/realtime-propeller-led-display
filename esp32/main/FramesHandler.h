@@ -13,7 +13,7 @@ private:
 
 
 class Frame {
-    
+
 };
 
 #endif //MAIN_FRAMESHANDLER_H

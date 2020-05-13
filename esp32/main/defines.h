@@ -10,6 +10,9 @@
  This example code is in the public domain.
  */
 
+#ifndef DEFINES_H
+#define DEFINES_H
+
 #define NUM_OF_LEDS 10
 
 // use first channel of 16 channels (started from zero)
@@ -56,7 +59,7 @@ int threshold = 40;
 #define ANDROID_PORT 9001
 
 
-
+#endif //DEFINES_H
 
 
     

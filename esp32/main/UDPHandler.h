@@ -67,7 +67,6 @@ private:
         Serial.println(msg);
         broadcastUDP.broadcastTo(msg, ANDROID_PORT);
 
-        delay(3000);
         vTaskDelete( NULL );
     }
 
@@ -147,7 +146,7 @@ public:
         xTaskCreatePinnedToCore(
                 BroadcastTaskCode,   /* Task function. */
                 "broadcastTask",     /* name of task. */
-                1000,       /* Stack size of task */
+                10000,       /* Stack size of task */
 //                NULL,        /* parameter of the task */
                 (void*)messageCopyCharPointer,
                 1,           /* priority of the task */
