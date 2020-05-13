@@ -5,7 +5,7 @@
 #ifndef MAIN_UTILS_H
 #define MAIN_UTILS_H
 
-class Timer() {
+class Timer {
 private:
     unsigned long startTime;
 public:
@@ -16,6 +16,6 @@ public:
     unsigned long getElapsedTime(){
         return millis() - startTime;
     }
-}
+};
 
 #endif //MAIN_UTILS_H

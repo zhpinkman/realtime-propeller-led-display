@@ -7,12 +7,14 @@
 #include "LightSensor.h"
 #include "UDPHandler.h"
 #include "LEDs.h"
+#include "FrameHandler.h"
 
 
 
 LightSensor *lightSensor;
 UDPHandler *udpHandler;
 LEDs *leds;
+FrameHandler* frameHandler;
 
 void gotTouch() {
     lightSensor->restart();
@@ -36,6 +38,8 @@ void setup() {
 
     lightSensor = new LightSensor(LDR_SENSOR_PIN);
     touchAttachInterrupt(T5, gotTouch, threshold);  // T5 = PIN D12
+
+    frameHandler = new FrameHandler(udpHandler);
 }
 
 void loop() {
@@ -48,7 +52,7 @@ void loop() {
 //        brightness = 10;
 //    }
 
-    leds->setLeds(currentTimeInLoop, loopTime);
+//    leds->setLeds(currentTimeInLoop, loopTime, frameHandler->getCurrentFrame(), frameHandler->getCurrentFrameWidth());
 //    for(int i = 0; i < NUM_OF_LEDS; i++){
 //      ledcAnalogWrite(ledChannels[i], brightness);
 //    }

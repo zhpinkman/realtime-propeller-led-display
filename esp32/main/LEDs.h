@@ -51,6 +51,27 @@ public:
             ledcAnalogWrite(ledChannels[i], brightness);
         }
     }
+
+    void setLeds(long currentTimeInLoop, long loopTime, int frame[MAX_FRAME_WIDTH][MAX_FRAME_WIDTH], int frameWidth) {
+        double radian = ((float) currentTimeInLoop / (float) loopTime) * 2 * PI;
+//  Serial.println(radian / PI * 180);
+        double baseX = cos(radian) * (double) frameWidth / 2 / (double) NUM_OF_LEDS;
+        double baseY = sin(radian) * (double) frameWidth / 2 / (double) NUM_OF_LEDS;
+        for (int i = 0; i < NUM_OF_LEDS; i++) {
+            int x = floor(baseX * (double) i) + frameWidth / 2;
+            int y = floor(baseY * (double) i) + frameWidth / 2;
+//    Serial.print("X: ");
+//    Serial.print(x);
+//    Serial.print(", Y: ");
+//    Serial.println(y);
+            int brightness = frame[y][x] * MAX_BRIGHTNESS / 255;
+            if(brightness < 0 || brightness > 255){
+                brightness = 5;
+            }
+//    Serial.println(brightness);
+            ledcAnalogWrite(ledChannels[i], brightness);
+        }
+    }
 };
 
 #endif //MAIN_LEDS_H
