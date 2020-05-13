@@ -1,6 +1,8 @@
 //
 // Created by Mohsen on 5/13/2020.
 //
+
+#include "defines.h"
 #include "utils.h"
 #include "UDPHandler.h"
 
@@ -9,27 +11,27 @@
 
 class Frame {
 private:
-    int pic[MAX_FRAME_WIDTH][MAX_FRAME_WIDTH];
+    int pic[MAX_DEGREE][NUM_OF_LEDS];  // Angular Frame
     int duration;
-    int width;
+    int angleAccuracy; // 0 < < MAX_DEGREE
 
 public:
-    void constructFrame(int _pic[MAX_FRAME_WIDTH][MAX_FRAME_WIDTH], int _duration, int _width){
-        memcpy(pic, _pic, sizeof (int) * MAX_FRAME_WIDTH * MAX_FRAME_WIDTH);
+    void constructFrame(int _pic[MAX_DEGREE][NUM_OF_LEDS], int _duration, int _angleAccuracy = MAX_DEGREE){
+        memcpy(pic, _pic, sizeof (int) * MAX_DEGREE * NUM_OF_LEDS);
         duration = _duration;
-        width = _width;
+        angleAccuracy = _angleAccuracy;
     }
 
     int getDuration() {
         return duration;
     }
 
-    int (*getPic())[MAX_FRAME_WIDTH] {
+    int (*getPic())[NUM_OF_LEDS] {
         return pic;
     }
 
-    int getWidth() {
-        return width;
+    int getAngleAccuracy() {
+        return angleAccuracy;
     }
 
     void deletePic() {
@@ -57,7 +59,7 @@ private:
 public:
     FrameHandler(UDPHandler* _udpHandler) {
         udpHandler = _udpHandler;
-        frames[0].constructFrame(crossPic, 10000, 30);
+        frames[0].constructFrame(pacman, 10000);
         requestTimer = new Timer();
         frameTimer = new Timer();
         requestTimer->start();
@@ -78,12 +80,12 @@ public:
         }
     }
 
-    int (*getCurrentFrame())[MAX_FRAME_WIDTH] {
+    int (*getCurrentFrame())[NUM_OF_LEDS] {
         return frames[currentFrameIndex].getPic();
     }
 
-    int getCurrentFrameWidth() {
-        return frames[currentFrameIndex].getWidth();
+    int getCurrentFrameAngleAccuracy() {
+        return frames[currentFrameIndex].getAngleAccuracy();
     }
 
 };
