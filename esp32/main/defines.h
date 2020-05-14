@@ -51,7 +51,9 @@
 
 int threshold = 40;
 #define PI 3.14159265
-#define MAX_BRIGHTNESS 1
+#define MAX_BRIGHTNESS 255  // 0 <= <= 255
+#define BRIGHTNESS_STEPS 255  // 1 <= <= 255
+#define BRIGHTNESS_CHANGE_FACTOR 3  // pow of value (brightness change factor difference in dark and bright values)
 
 #define MAX_FRAMES_ARRAY_LEN 30
 #define MAX_FRAME_WIDTH 30  // Caution Mohsen: this amount times frames array size will be allocated. (SRAM has 512KiB)
