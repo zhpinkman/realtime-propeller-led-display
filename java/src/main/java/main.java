@@ -42,7 +42,10 @@ public class main {
 //                System.out.print(x);
 //                System.out.print(", ");
 //                System.out.println(y);
-                angularResult[degree][i] = a[y][x];
+                if(degree < 180)
+                    angularResult[degree][i] = degree % 180 * 255 / 180;
+                if(degree >= 180)
+                    angularResult[degree][i] = 255 - (degree % 180 * 255 / 180);
             }
         }
 

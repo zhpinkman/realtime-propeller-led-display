@@ -31,7 +31,7 @@
 #define LEDC_TIMER_13_BIT  13
 
 // use 5000 Hz as a LEDC base frequency
-#define LEDC_BASE_FREQ     10000
+#define LEDC_BASE_FREQ     5000
 
 // fade LED PIN (replace with LED_BUILTIN constant for built-in LED)
 #define LED_PIN0           32
@@ -45,17 +45,17 @@
 #define LED_PIN8           4
 #define LED_PIN9           23
 
-#define LDR_SENSOR_PIN     15
+#define LDR_SENSOR_PIN     34 // use pins 32 and above when WiFi is ON
 
 #define LED_BUILTIN 2
 
 int threshold = 40;
 #define PI 3.14159265
-#define MAX_BRIGHTNESS 150
+#define MAX_BRIGHTNESS 1
 
-#define MAX_FRAMES_ARRAY_LEN 5
+#define MAX_FRAMES_ARRAY_LEN 30
 #define MAX_FRAME_WIDTH 30  // Caution Mohsen: this amount times frames array size will be allocated. (SRAM has 512KiB)
-#define MAX_DEGREE 360  // How accurate frames are in terms of angle (NUM_OF_LEDS determines linear accuracy)
+#define MAX_DEGREE 360  // How accurate frames are in terms of angle (NUM_OF_LEDS determines linear accuracy)  // Caution Mohsen: this amount times frames array size will be allocated. (SRAM has 512KiB)
 
 // NETWORK
 #define BOARD_PORT 9000

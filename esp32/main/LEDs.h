@@ -64,7 +64,7 @@ public:
 //    Serial.print(x);
 //    Serial.print(", Y: ");
 //    Serial.println(y);
-            int brightness = frame[y][x] * MAX_BRIGHTNESS / 255;
+            int brightness = frame[y][x];
             if(brightness < 0 || brightness > 255){
                 brightness = 5;
             }
@@ -73,19 +73,24 @@ public:
         }
     }
 
-    void setLedsByAngularFrames(long currentTimeInLoop, long loopTime, int frame[MAX_DEGREE][NUM_OF_LEDS], int angleAccuracy = MAX_DEGREE) {
+    void setLedsByAngularFrame(long currentTimeInLoop, long loopTime, byte frame[MAX_DEGREE][NUM_OF_LEDS], int angleAccuracy = MAX_DEGREE) {
         double degree = ((float) currentTimeInLoop / (float) loopTime) * angleAccuracy;
-        int degreeInt = (int) degreeInt;
+        int degreeInt = floor(degree);
+        
         if(degreeInt < 0 || degreeInt > angleAccuracy){
             degreeInt = 0;
         }
+//        Serial.println(degree);
         for (int i = 0; i < NUM_OF_LEDS; i++) {
-            int brightness = frame[degreeInt][i] * MAX_BRIGHTNESS / 255;
-            if(brightness < 0 || brightness > 255){
-                brightness = 5;
+            int brightness = frame[degreeInt][i];
+//            Serial.print(brightness);
+//            Serial.print(",");
+            if(brightness < 0 || brightness > 255 || loopTime == 0){
+                brightness = i % 2 * 5;
             }
             ledcAnalogWrite(ledChannels[i], brightness);
         }
+//        Serial.println();
     }
 };
 

@@ -11,13 +11,13 @@
 
 class Frame {
 private:
-    int pic[MAX_DEGREE][NUM_OF_LEDS];  // Angular Frame
+    byte pic[MAX_DEGREE][NUM_OF_LEDS];  // Angular Frame
     int duration;
     int angleAccuracy; // 0 < < MAX_DEGREE
 
 public:
-    void constructFrame(int _pic[MAX_DEGREE][NUM_OF_LEDS], int _duration, int _angleAccuracy = MAX_DEGREE){
-        memcpy(pic, _pic, sizeof (int) * MAX_DEGREE * NUM_OF_LEDS);
+    void constructFrame(byte _pic[MAX_DEGREE][NUM_OF_LEDS], int _duration, int _angleAccuracy = MAX_DEGREE){
+        memcpy(pic, _pic, sizeof (byte) * MAX_DEGREE * NUM_OF_LEDS);
         duration = _duration;
         angleAccuracy = _angleAccuracy;
     }
@@ -26,7 +26,7 @@ public:
         return duration;
     }
 
-    int (*getPic())[NUM_OF_LEDS] {
+    byte (*getPic())[NUM_OF_LEDS] {
         return pic;
     }
 
@@ -59,7 +59,7 @@ private:
 public:
     FrameHandler(UDPHandler* _udpHandler) {
         udpHandler = _udpHandler;
-        frames[0].constructFrame(pacman, 10000);
+        frames[0].constructFrame(grayscale360, 10000);
         requestTimer = new Timer();
         frameTimer = new Timer();
         requestTimer->start();
@@ -80,7 +80,7 @@ public:
         }
     }
 
-    int (*getCurrentFrame())[NUM_OF_LEDS] {
+    byte (*getCurrentFrame())[NUM_OF_LEDS] {
         return frames[currentFrameIndex].getPic();
     }
 

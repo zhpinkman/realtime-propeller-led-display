@@ -52,12 +52,12 @@ void loop() {
 //        brightness = 10;
 //    }
 
-//    leds->setLeds(currentTimeInLoop, loopTime, frameHandler->getCurrentFrame(), frameHandler->getCurrentFrameWidth());
+    leds->setLedsByAngularFrame(currentTimeInLoop, loopTime, frameHandler->getCurrentFrame(), frameHandler->getCurrentFrameAngleAccuracy());
 //    for(int i = 0; i < NUM_OF_LEDS; i++){
 //      ledcAnalogWrite(ledChannels[i], brightness);
 //    }
-    udpHandler->broadcast(String(lightSensor->getLoopTime()));
-    delay(1000);
+//    udpHandler->broadcast(String(lightSensor->getLoopTime()));
+//    delay(1000);
 
 //      Serial.print("LoopCore: ");
 //      Serial.println(xPortGetCoreID());

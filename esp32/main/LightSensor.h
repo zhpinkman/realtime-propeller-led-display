@@ -20,6 +20,7 @@ public:
 
     void updateLight() {
         int lightVal = analogRead(sensorPin); // read the current light levels
+//        Serial.println(lightVal);
         if (!isInLight && (lightVal - lightInit > 500)) {
             long now = millis();
             if (now - oldTime > 60) {
