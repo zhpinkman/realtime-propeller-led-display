@@ -43,6 +43,7 @@ void setup() {
 }
 
 void loop() {
+    frameHandler->updateFrames();
     lightSensor->updateLight();
     long loopTime = lightSensor->getLoopTime();
     long currentTimeInLoop = lightSensor->getCurrentTimeInLoop();

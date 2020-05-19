@@ -7,6 +7,8 @@
 #ifndef ESP32_UDPHANDLER_H
 #define ESP32_UDPHANDLER_H
 
+AsyncUDP singleBroadcastUDP;
+
 class UDPHandler {
 private:
     AsyncUDP udp;
@@ -57,7 +59,7 @@ private:
 
     static void BroadcastTaskCode(void *pvParameters) {
         char* msg = (char*)pvParameters;
-        AsyncUDP broadcastUDP;
+        
         Serial.print("BroadcastTaskCode running on core ");
         Serial.println(xPortGetCoreID());
 
@@ -65,8 +67,9 @@ private:
         Serial.print(String(millis()));
         Serial.print("ms - START BROADCAST: ");
         Serial.println(msg);
-        broadcastUDP.broadcastTo(msg, ANDROID_PORT);
-
+        singleBroadcastUDP.broadcastTo(msg, ANDROID_PORT);
+//        broadcastUDP.close();
+        
         vTaskDelete( NULL );
     }
 
