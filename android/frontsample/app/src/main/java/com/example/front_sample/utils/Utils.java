@@ -54,7 +54,7 @@ public class Utils {
         return "";
     }
 
-    public static byte[] int2dArrToByteArr(int[][] intArr, byte[] prefix) throws Exception {
+    public static byte[] int2dArrToByteArr(int[][] intArr) throws Exception {
         int height = intArr.length;
         int width = intArr[0].length;
 //        if(arrLen != intArr[0].length){
@@ -63,13 +63,10 @@ public class Utils {
 //            throw new Exception("input size exceeds 255!");
 //        }
 
-        byte[] result = new byte[height * width + 1];
-        for (int i = 0; i < prefix.length; i++) {
-            result[i] = prefix[i];
-        }
+        byte[] result = new byte[height * width];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                result[prefix.length + i + j] = (byte) intArr[i][j];
+                result[i + j] = (byte) intArr[i][j];
             }
         }
         return result;
@@ -105,5 +102,21 @@ public class Utils {
 
     public static int bytesToUnsigned(byte b) {
         return b & 0xFF;
+    }
+
+    public static byte[] concatArrays(byte[] src1, byte[] src2) {
+        if (src1 == null) {
+            throw new IllegalArgumentException("src1 is required.");
+        }
+        if (src2 == null) {
+            throw new IllegalArgumentException("src2 is required.");
+        }
+
+        byte[] result = new byte[src1.length + src2.length];
+
+        System.arraycopy(src1, 0, result, 0, src1.length);
+        System.arraycopy(src2, 0, result, src1.length, src2.length);
+
+        return result;
     }
 }

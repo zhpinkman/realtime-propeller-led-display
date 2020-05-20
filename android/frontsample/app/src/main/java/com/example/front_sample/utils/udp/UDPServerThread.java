@@ -24,6 +24,7 @@ public class UDPServerThread extends Thread {
     private DatagramSocket socket;
     private boolean running;
     private List<int[][]> context = new ArrayList<>();
+    private int frameDuration = 5000;
 
     UDPServerThread(int androidPort, int boardPort) {
         super();
@@ -40,9 +41,12 @@ public class UDPServerThread extends Thread {
         this.context = newContext;
     }
 
-    private void sendDatagramPacket(byte[] byteBuf, InetAddress address) throws IOException {
+    private void sendDatagramPacket(byte[] byteBuf, InetAddress address, byte[] prefix) throws IOException {
+        Log.e(TAG, String.valueOf(byteBuf.length));
         for (int packetIndex = 0; packetIndex < byteBuf.length; packetIndex += UDP_SIZE_LIMIT_BYTES) {
+//            Log.e(TAG, String.valueOf(packetIndex));
             byte[] byteChunk = Arrays.copyOfRange(byteBuf, packetIndex, min(packetIndex + UDP_SIZE_LIMIT_BYTES, byteBuf.length));
+            byteChunk = Utils.concatArrays(prefix, byteChunk);
             Log.e(TAG, Arrays.toString(byteChunk));
             DatagramPacket packet = new DatagramPacket(byteChunk, byteChunk.length, address, this.boardPort);
             socket.send(packet);
@@ -78,13 +82,14 @@ public class UDPServerThread extends Thread {
                     if (requestedFramesCount > 0) {
                         for (int i = 0; i < requestedFramesCount; i++) {
                             int[][] angularFrame = Utils.squareToAngular(this.context.get(0));
-                            byte[] prefix = new byte[3];
-                            prefix[0] = (byte) 'F';
-                            prefix[1] = (byte) i;
-                            prefix[2] = (byte) angularFrame.length;
-                            byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame, prefix);
+                            byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame);
                             Log.e(TAG, Arrays.toString(byteBuf));
-                            this.sendDatagramPacket(byteBuf, address);
+                            byte[] prefix = new byte[4];
+                            prefix[0] = (byte) 'F';  // FRAME COMMAND
+                            prefix[1] = (byte) i;  // FRAME NUMBER 0 TO NUMBER REQUESTED - 1
+                            prefix[2] = (byte) angularFrame.length;  // USUALLY 360
+                            prefix[3] = (byte) this.frameDuration;
+                            this.sendDatagramPacket(byteBuf, address, prefix);
 
                             if (this.context.size() > 1) {
                                 this.context.remove(0);

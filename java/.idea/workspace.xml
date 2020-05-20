@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5951cd7a-2ba3-459e-97ac-0d6d71673357" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../android/frontsample/app/assets/bigPic.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../android/frontsample/app/assets/bigPic.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../android/frontsample/app/src/main/java/com/example/front_sample/utils/udp/UDPServerThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/../android/frontsample/app/src/main/java/com/example/front_sample/utils/udp/UDPServerThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../esp32/main/UDPHandler.h" beforeDir="false" afterPath="$PROJECT_DIR$/../esp32/main/UDPHandler.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../esp32/main/FrameHandler.h" beforeDir="false" afterPath="$PROJECT_DIR$/../esp32/main/FrameHandler.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -22,7 +17,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="493">
+            <state relative-caret-position="421">
               <caret line="29" column="29" lean-forward="true" selection-start-line="29" selection-start-column="29" selection-end-line="29" selection-end-column="29" />
             </state>
           </provider>
@@ -278,7 +273,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
+        <state relative-caret-position="421">
           <caret line="29" column="29" lean-forward="true" selection-start-line="29" selection-start-column="29" selection-end-line="29" selection-end-column="29" />
         </state>
       </provider>

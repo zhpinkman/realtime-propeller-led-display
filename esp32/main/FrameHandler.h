@@ -66,6 +66,11 @@ public:
         frameTimer->start();
     }
 
+    void addFrame(byte frame[MAX_DEGREE][NUM_OF_LEDS], int duration) {
+        nextFrameIndex();
+        frames[currentFrameIndex].constructFrame(frame, duration);
+    }
+
     void updateFrames() {
         if(frameTimer->getElapsedTime() > frames[currentFrameIndex].getDuration()){
             if(framesArrLen > 1){
