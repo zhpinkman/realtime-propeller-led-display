@@ -20,7 +20,7 @@ public class main {
                 if (i != row.length - 1)
                     System.out.print(", ");
             }
-            System.out.println("},");
+            System.out.print("},");
         }
         System.out.print("}");
     }
@@ -42,10 +42,13 @@ public class main {
 //                System.out.print(x);
 //                System.out.print(", ");
 //                System.out.println(y);
-                if(degree < 180)
-                    angularResult[degree][i] = degree % 180 * 255 / 180;
-                if(degree >= 180)
-                    angularResult[degree][i] = 255 - (degree % 180 * 255 / 180);
+
+//                if(degree < 180)
+//                    angularResult[degree][i] = degree % 180 * 255 / 180;
+//                if(degree >= 180)
+//                    angularResult[degree][i] = 255 - (degree % 180 * 255 / 180);
+
+                angularResult[degree][i] = a[y][x];
             }
         }
 

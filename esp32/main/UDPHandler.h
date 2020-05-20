@@ -60,8 +60,8 @@ private:
     static void BroadcastTaskCode(void *pvParameters) {
         char* msg = (char*)pvParameters;
         
-        Serial.print("BroadcastTaskCode running on core ");
-        Serial.println(xPortGetCoreID());
+//        Serial.print("BroadcastTaskCode running on core ");
+//        Serial.println(xPortGetCoreID());
 
         
         Serial.print(String(millis()));
@@ -121,7 +121,7 @@ public:
                 Serial.write(packet.data(), packet.length());
                 Serial.println();
                 //reply to the client
-                packet.printf("Got %u bytes of data", packet.length());
+//                packet.printf("Got %u bytes of data", packet.length());
             });
         } else {
             Serial.println("Failed starting UDP server!");

@@ -2,6 +2,7 @@ package com.example.front_sample.utils.udp;
 
 import android.util.Log;
 
+import com.example.front_sample.config.Config;
 import com.example.front_sample.utils.Utils;
 
 import java.io.IOException;
@@ -14,8 +15,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class UDPServerThread extends Thread{
+import static java.lang.Math.min;
+
+public class UDPServerThread extends Thread {
     private final static String TAG = "UDP";
+    private final static int UDP_SIZE_LIMIT_BYTES = Config.UDP_SIZE_LIMIT_BYTES;
     private int androidPort, boardPort;
     private DatagramSocket socket;
     private boolean running;
@@ -25,15 +29,24 @@ public class UDPServerThread extends Thread{
         super();
         this.androidPort = androidPort;
         this.boardPort = boardPort;
-        this.context.add(new int[25][25]);
+        this.context.add(new int[128][128]);
     }
 
-    void setRunning(boolean running){
+    void setRunning(boolean running) {
         this.running = running;
     }
 
     void setContext(List<int[][]> newContext) {
         this.context = newContext;
+    }
+
+    private void sendDatagramPacket(byte[] byteBuf, InetAddress address) throws IOException {
+        for (int packetIndex = 0; packetIndex < byteBuf.length; packetIndex += UDP_SIZE_LIMIT_BYTES) {
+            byte[] byteChunk = Arrays.copyOfRange(byteBuf, packetIndex, min(packetIndex + UDP_SIZE_LIMIT_BYTES, byteBuf.length));
+            Log.e(TAG, Arrays.toString(byteChunk));
+            DatagramPacket packet = new DatagramPacket(byteChunk, byteChunk.length, address, this.boardPort);
+            socket.send(packet);
+        }
     }
 
     @Override
@@ -48,7 +61,7 @@ public class UDPServerThread extends Thread{
 //            updateState("UDP Server is running");
             Log.e(TAG, "UDP Server is running");
 
-            while(running){
+            while (running) {
                 byte[] buf = new byte[100];
 
                 // receive request
@@ -60,30 +73,38 @@ public class UDPServerThread extends Thread{
                 int port = packet.getPort();
                 Log.e(TAG, "Request from: " + address + ":" + port + " -> " + sentence + "\n");
 
-                if(!sentence.contains("Got")) {
-                    System.out.println("HERE");
-                    // send the response to the client at "address" and "port"
-                    String dString = System.currentTimeMillis() + "\n"
-                            + "Your address " + ((InetAddress) address).toString() + ":" + String.valueOf(port);
-                    byte[] byteBuf = Utils.int2dArrToByteArr(this.context.get(0));
-                    if(this.context.size() > 1){
-                        this.context.remove(0);
+                try {
+                    int requestedFramesCount = Integer.parseInt(sentence);
+                    if (requestedFramesCount > 0) {
+                        for (int i = 0; i < requestedFramesCount; i++) {
+                            int[][] angularFrame = Utils.squareToAngular(this.context.get(0));
+                            byte[] prefix = new byte[3];
+                            prefix[0] = (byte) 'F';
+                            prefix[1] = (byte) i;
+                            prefix[2] = (byte) angularFrame.length;
+                            byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame, prefix);
+                            Log.e(TAG, Arrays.toString(byteBuf));
+                            this.sendDatagramPacket(byteBuf, address);
+
+                            if (this.context.size() > 1) {
+                                this.context.remove(0);
+                            }else{
+                                break;
+                            }
+                        }
                     }
-                    System.out.println(Arrays.toString(byteBuf));
-                    buf = dString.getBytes();
-                    packet = new DatagramPacket(byteBuf, byteBuf.length, address, this.boardPort);
-                    socket.send(packet);
-//                    socket.send(packet);
+                }catch (Exception e){
+//                    System.out.println("");
                 }
             }
 
             Log.e(TAG, "UDP Server ended");
 
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
         } finally {
-            if(socket != null){
+            if (socket != null) {
                 socket.close();
                 Log.e(TAG, "socket.close()");
             }

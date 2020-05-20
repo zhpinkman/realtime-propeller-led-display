@@ -26,9 +26,10 @@ public class UDPActivity extends AppCompatActivity {
                 try {
                     Properties properties = new Properties();
                     properties.load(UDPActivity.this.getAssets().open("bigPic.properties"));
-                    String a = properties.getProperty("pic");
-                    HttpHandler httpHandler = new HttpHandler();
-                    httpHandler.setContext(a);
+                    String a = properties.getProperty("pacmanPic");
+//                    HttpHandler httpHandler = new HttpHandler();
+//                    httpHandler.setContext(a);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

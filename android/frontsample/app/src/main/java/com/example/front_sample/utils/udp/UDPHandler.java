@@ -3,6 +3,7 @@ package com.example.front_sample.utils.udp;
 import android.util.Log;
 
 import com.example.front_sample.activities.MainActivity;
+import com.example.front_sample.config.Config;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -13,8 +14,6 @@ import java.util.Date;
 import java.util.List;
 
 public class UDPHandler {
-    private final static int BOARD_PORT = 9000;
-    private final static int ANDROID_PORT = 9001;
     UDPServerThread udpServerThread;
 
     public UDPHandler() {
@@ -22,7 +21,7 @@ public class UDPHandler {
     }
 
     public void startServer() {
-        udpServerThread = new UDPServerThread(ANDROID_PORT, BOARD_PORT);
+        udpServerThread = new UDPServerThread(Config.ANDROID_PORT, Config.BOARD_PORT);
         udpServerThread.start();
     }
 

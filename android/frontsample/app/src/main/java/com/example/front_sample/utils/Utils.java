@@ -6,6 +6,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.front_sample.config.Config;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -52,24 +54,53 @@ public class Utils {
         return "";
     }
 
-    public static byte[] int2dArrToByteArr(int[][] intArr) throws Exception {
-        int arrLen = intArr.length;
-        if(arrLen != intArr[0].length){
-            throw new Exception("Input array must be a square!");
-        } else if(arrLen > 255){
-            throw new Exception("input size exceeds 255!");
-        }
+    public static byte[] int2dArrToByteArr(int[][] intArr, byte[] prefix) throws Exception {
+        int height = intArr.length;
+        int width = intArr[0].length;
+//        if(arrLen != intArr[0].length){
+//            throw new Exception("Input array must be a square!");
+//        } else if(arrLen > 255){
+//            throw new Exception("input size exceeds 255!");
+//        }
 
-        byte[] result = new byte[arrLen * arrLen + 1];
-        int prefixLen = 2;
-        result[0] = (byte) 'F';
-        result[1] = (byte) arrLen;
-        for (int i = 0; i < arrLen; i++) {
-            for (int j = 0; j < arrLen; j++) {
-                result[prefixLen + i + j] = (byte) intArr[i][j];
+        byte[] result = new byte[height * width + 1];
+        for (int i = 0; i < prefix.length; i++) {
+            result[i] = prefix[i];
+        }
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                result[prefix.length + i + j] = (byte) intArr[i][j];
             }
         }
         return result;
+    }
+
+    public static int[][] squareToAngular(int[][] a) {
+        int[][] angularResult = new int[Config.MAX_DEGREE][Config.NUM_OF_LEDS];
+
+        for (int degree = 0; degree < 360; degree++) {
+            double baseX = Math.cos(Math.toRadians(degree)) * (double) a.length / 2 / (double) Config.NUM_OF_LEDS;
+            double baseY = Math.sin(Math.toRadians(degree)) * (double) a.length / 2 / (double) Config.NUM_OF_LEDS;
+//            System.out.print(baseX);
+//            System.out.print(", ");
+//            System.out.println(baseY);
+            for (int i = 0; i < Config.NUM_OF_LEDS; i++) {
+                int x = (int) (Math.floor(baseX * i) + a.length / 2);
+                int y = (int) (Math.floor(baseY * i) + a.length / 2);
+//                System.out.print(x);
+//                System.out.print(", ");
+//                System.out.println(y);
+
+//                if(degree < 180)
+//                    angularResult[degree][i] = degree % 180 * 255 / 180;
+//                if(degree >= 180)
+//                    angularResult[degree][i] = 255 - (degree % 180 * 255 / 180);
+
+                angularResult[degree][i] = a[y][x];
+            }
+        }
+
+        return angularResult;
     }
 
     public static int bytesToUnsigned(byte b) {
