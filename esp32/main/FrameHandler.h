@@ -4,7 +4,8 @@
 
 #include "defines.h"
 #include "utils.h"
-#include "UDPHandler.h"
+#include "UDPBroadcast.h"
+#include "res/staticPics.h"
 
 #ifndef MAIN_FRAMEHANDLER_H
 #define MAIN_FRAMEHANDLER_H
@@ -46,10 +47,10 @@ private:
     int currentFrameIndex = 0;
 
     Timer *requestTimer, *frameTimer;
-    UDPHandler* udpHandler;
+    UDPBroadcast* udpBroadcast;
 
     void requestNewFrames() {
-        udpHandler->broadcast(String(MAX_FRAMES_ARRAY_LEN - framesArrLen));
+        udpBroadcast->broadcast(String(MAX_FRAMES_ARRAY_LEN - framesArrLen));
     }
 
     int nextFrameIndex() {
@@ -57,8 +58,8 @@ private:
     }
 
 public:
-    FrameHandler(UDPHandler* _udpHandler) {
-        udpHandler = _udpHandler;
+    FrameHandler() {
+        udpBroadcast = new UDPBroadcast();
         frames[0].constructFrame(grayscale360, 10000);
         requestTimer = new Timer();
         frameTimer = new Timer();

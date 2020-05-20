@@ -45,6 +45,9 @@ public class UDPServerThread extends Thread {
         Log.e(TAG, String.valueOf(byteBuf.length));
         for (int packetIndex = 0; packetIndex < byteBuf.length; packetIndex += UDP_SIZE_LIMIT_BYTES) {
 //            Log.e(TAG, String.valueOf(packetIndex));
+            if(packetIndex + UDP_SIZE_LIMIT_BYTES >= byteBuf.length){
+                prefix[0] = 'E';
+            }
             byte[] byteChunk = Arrays.copyOfRange(byteBuf, packetIndex, min(packetIndex + UDP_SIZE_LIMIT_BYTES, byteBuf.length));
             byteChunk = Utils.concatArrays(prefix, byteChunk);
             Log.e(TAG, Arrays.toString(byteChunk));

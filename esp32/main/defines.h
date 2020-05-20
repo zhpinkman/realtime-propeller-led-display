@@ -60,6 +60,8 @@ int threshold = 40;
 #define MAX_DEGREE 360  // How accurate frames are in terms of angle (NUM_OF_LEDS determines linear accuracy)  // Caution Mohsen: this amount times frames array size will be allocated. (SRAM has 512KiB)
 
 // NETWORK
+#define SSID "D-Link"
+#define PASSWORD "shapanhamed"
 #define BOARD_PORT 9000
 #define ANDROID_PORT 9001
 

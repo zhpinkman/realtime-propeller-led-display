@@ -1,28 +1,25 @@
 //
 // Created by Mohsen on 4/29/2020.
 //
+
+#ifndef ESP32_UDPBROADCAST_H
+#define ESP32_UDPBROADCAST_H
+
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include "utils.h"
 
-#ifndef ESP32_UDPHANDLER_H
-#define ESP32_UDPHANDLER_H
-
 AsyncUDP singleBroadcastUDP;
 
-class UDPHandler {
+class UDPBroadcast {
 private:
     AsyncUDP udp;
 //    const char * ssid = "DM-JoinMe";
 //    const char * password = "87654321";
     
-    const char * ssid = "D-Link";
-    const char * password = "shapanhamed";
-
-    int currentDownloadingFrameIndex = 0;
-    int currentRequestedFramesCount = 0;
+    const char * ssid = SSID;
+    const char * password = PASSWORD;
     
-
     static void BroadcastForeverTaskCode(void *pvParameters) {
         char* msg2 = (char*)pvParameters;
         AsyncUDP broadcastUDP;
@@ -83,67 +80,7 @@ private:
     }
 
 public:
-    UDPHandler(){
-      
-    }
-    void startUDPServer() {
-        WiFi.mode(WIFI_STA);
-        WiFi.begin(ssid, password);
-        if (WiFi.waitForConnectResult() != WL_CONNECTED) {
-            Serial.println("WiFi Failed");
-            while (1) {
-                delay(1000);
-                Serial.println(WiFi.waitForConnectResult());
-                if (WiFi.waitForConnectResult() == WL_CONNECTED) {
-                    break;
-                }
-            }
-        }
-        if (udp.listen(BOARD_PORT)) {
-            Serial.print("UDP Listening on IP: ");
-            Serial.println(WiFi.localIP());
-            udp.onPacket([&](AsyncUDPPacket packet) {
-//                Serial.print(String(millis()));
-//                Serial.println("ms - ANSWER RECEIVED");
-//            
-//                Serial.print("UDPCore: ");
-//                Serial.println(xPortGetCoreID());
-//
-//                Serial.print("UDP Packet Type: ");
-//                Serial.print(packet.isBroadcast() ? "Broadcast" : packet.isMulticast() ? "Multicast" : "Unicast");
-//                Serial.print(", From: ");
-//                Serial.print(packet.remoteIP());
-//                Serial.print(":");
-//                Serial.print(packet.remotePort());
-//                Serial.print(", To: ");
-//                Serial.print(packet.localIP());
-//                Serial.print(":");
-//                Serial.print(packet.localPort());
-//                Serial.print(", Length: ");
-//                Serial.print(packet.length());
-//                Serial.print(", Data: ");
-//                Serial.write(packet.data(), packet.length());
-//                Serial.println();
-
-                parseCommand(packet.data(), packet.length());
-                
-                //reply to the client
-//                packet.printf("Got %u bytes of data", packet.length());
-            });
-        } else {
-            Serial.println("Failed starting UDP server!");
-        }
-    }
-
-    void parseCommand(byte packetData[], int packetLength) {
-        unsigned char command = packetData[0];
-        int frameNumber = packetData[1];
-        int frameDuration = (int(packetData[3]) << 8) + int(packetData[2]);
-        Serial.println(frameNumber);
-        Serial.println(frameDuration);
-        if (command == 'F') {
-            
-        }
+    UDPBroadcast(){
     }
 
     void startBroadcastTask() {
@@ -161,8 +98,6 @@ public:
     }
 
     void broadcast(String messageStr) {
-        this->currentRequestedFramesCount = messageStr.toInt();
-        
         char messageCopyCharPointer[messageStr.length()];
         messageStr.toCharArray(messageCopyCharPointer, messageStr.length()+1);
         TaskHandle_t BroadcastTask;
@@ -178,4 +113,6 @@ public:
     }
 };
 
-#endif //ESP32_UDPHANDLER_H
+
+
+#endif //ESP32_UDPBROADCAST_H

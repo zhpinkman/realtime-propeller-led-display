@@ -5,14 +5,15 @@
 #include "defines.h"
 #include "analogWriteHandler.h"
 #include "LightSensor.h"
-#include "UDPHandler.h"
-#include "LEDs.h"
 #include "FrameHandler.h"
+#include "UDPServer.h"
+#include "LEDs.h"
+
 
 
 
 LightSensor *lightSensor;
-UDPHandler *udpHandler;
+UDPServer *udpServer;
 LEDs *leds;
 FrameHandler* frameHandler;
 
@@ -30,16 +31,17 @@ void setup() {
     leds = new LEDs();
     leds->init();
 
-    udpHandler = new UDPHandler();
+    frameHandler = new FrameHandler();
+
+    udpServer = new UDPServer(frameHandler);
+
     digitalWrite(LED_BUILTIN, HIGH);
-    udpHandler->startUDPServer();
-//    udpHandler->startBroadcastTask();
+    udpServer->startUDPServer();
     digitalWrite(LED_BUILTIN, LOW);
 
     lightSensor = new LightSensor(LDR_SENSOR_PIN);
     touchAttachInterrupt(T5, gotTouch, threshold);  // T5 = PIN D12
 
-    frameHandler = new FrameHandler(udpHandler);
 }
 
 void loop() {
