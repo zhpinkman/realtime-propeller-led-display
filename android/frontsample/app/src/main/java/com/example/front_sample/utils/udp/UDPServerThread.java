@@ -53,6 +53,18 @@ public class UDPServerThread extends Thread {
         }
     }
 
+    private byte[] preparePrefix(int frameNumber, int angularFrameLength, int frameDuration) {
+        byte[] prefix = new byte[5];
+        prefix[0] = (byte) 'F';  // FRAME COMMAND
+        prefix[1] = (byte) frameNumber;  // FRAME NUMBER 0 TO NUMBER REQUESTED - 1
+//        prefix[2] = (byte) angularFrameLength;  // USUALLY 360
+
+        // & 0xFF=255 masks all but the lowest eight bits
+        prefix[2] = (byte) (frameDuration & 0xFF);  // frame duration max 16 bit = 65536
+        prefix[3] = (byte) ((frameDuration >> 8) & 0xFF);  // higher bits
+        return prefix;
+    }
+
     @Override
     public void run() {
 
@@ -84,11 +96,7 @@ public class UDPServerThread extends Thread {
                             int[][] angularFrame = Utils.squareToAngular(this.context.get(0));
                             byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame);
                             Log.e(TAG, Arrays.toString(byteBuf));
-                            byte[] prefix = new byte[4];
-                            prefix[0] = (byte) 'F';  // FRAME COMMAND
-                            prefix[1] = (byte) i;  // FRAME NUMBER 0 TO NUMBER REQUESTED - 1
-                            prefix[2] = (byte) angularFrame.length;  // USUALLY 360
-                            prefix[3] = (byte) this.frameDuration;
+                            byte[] prefix = this.preparePrefix(i, angularFrame.length, this.frameDuration);
                             this.sendDatagramPacket(byteBuf, address, prefix);
 
                             if (this.context.size() > 1) {

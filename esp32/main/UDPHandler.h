@@ -3,6 +3,7 @@
 //
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include "utils.h"
 
 #ifndef ESP32_UDPHANDLER_H
 #define ESP32_UDPHANDLER_H
@@ -17,6 +18,9 @@ private:
     
     const char * ssid = "D-Link";
     const char * password = "shapanhamed";
+
+    int currentDownloadingFrameIndex = 0;
+    int currentRequestedFramesCount = 0;
     
 
     static void BroadcastForeverTaskCode(void *pvParameters) {
@@ -133,7 +137,11 @@ public:
 
     void parseCommand(byte packetData[], int packetLength) {
         unsigned char command = packetData[0];
-        if (command == "F") {
+        int frameNumber = packetData[1];
+        int frameDuration = (int(packetData[3]) << 8) + int(packetData[2]);
+        Serial.println(frameNumber);
+        Serial.println(frameDuration);
+        if (command == 'F') {
             
         }
     }
@@ -153,6 +161,8 @@ public:
     }
 
     void broadcast(String messageStr) {
+        this->currentRequestedFramesCount = messageStr.toInt();
+        
         char messageCopyCharPointer[messageStr.length()];
         messageStr.toCharArray(messageCopyCharPointer, messageStr.length()+1);
         TaskHandle_t BroadcastTask;

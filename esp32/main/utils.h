@@ -18,4 +18,9 @@ public:
     }
 };
 
+int bytesToUnsigned(byte b) {
+    int result = (int) b;
+    return result;
+}
+
 #endif //MAIN_UTILS_H
