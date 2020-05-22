@@ -54,6 +54,8 @@ private:
     }
 
     int nextFrameIndex() {
+        Serial.print("F:");
+        Serial.println((currentFrameIndex + 1) % MAX_FRAMES_ARRAY_LEN);
         return (currentFrameIndex + 1) % MAX_FRAMES_ARRAY_LEN;
     }
 
@@ -68,8 +70,9 @@ public:
     }
 
     void addFrame(byte frame[MAX_DEGREE][NUM_OF_LEDS], int duration) {
-        nextFrameIndex();
-        frames[currentFrameIndex].constructFrame(frame, duration);
+        frames[nextFrameIndex()].constructFrame(frame, duration);
+        framesArrLen++;
+        Serial.println(frame[10][10]);
     }
 
     void updateFrames() {
@@ -77,6 +80,7 @@ public:
             if(framesArrLen > 1){
                 frames[currentFrameIndex].deletePic();
                 currentFrameIndex = nextFrameIndex();
+                framesArrLen--;
             }
         }
 

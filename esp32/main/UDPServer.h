@@ -21,7 +21,8 @@ private:
 
     int currentDownloadingFrameIndex = 0;
     int currentRequestedFramesCount = 0;
-
+    byte currentFrame[MAX_DEGREE][NUM_OF_LEDS];
+    int currentFramePixel = 0;
     FrameHandler* frameHandler;
 
 public:
@@ -42,6 +43,7 @@ public:
                 }
             }
         }
+        
         if (udp.listen(BOARD_PORT)) {
             Serial.print("UDP Listening on IP: ");
             Serial.println(WiFi.localIP());
@@ -79,18 +81,53 @@ public:
     }
 
     void parseCommand(byte packetData[], int packetLength) {
+        int prefixLength = 4;
         unsigned char command = packetData[0];
         int frameNumber = packetData[1];
         int frameDuration = (int(packetData[3]) << 8) + int(packetData[2]);
 //        Serial.println(frameNumber);
 //        Serial.println(frameDuration);
         if (command == 'F') {
-//            frameHandler->addToFrameHandler(to2dArr(packetData, 4), frameDuration);
+            if(!appendToFrame(packetData, prefixLength, packetLength)){
+//                finalizeFrame(packetData, prefixLength, packetLength, frameDuration);
+            }
         }
         if (command == 'E') {
-//            Serial.write(packetData, packetLength);
-//            Serial.println();
+            finalizeFrame(packetData, prefixLength, packetLength, frameDuration);
         }
+    }
+
+    bool appendToFrame(byte packetData[], int prefixLength, int packetLength){
+        if(!doesPacketFitInFrame(packetLength - prefixLength)) {
+            Serial.println("Overload Frame!");
+            return false;
+        }
+        for(int i = 0; i < packetLength - prefixLength; i++) {
+            currentFrame[currentFramePixel / NUM_OF_LEDS][currentFramePixel % NUM_OF_LEDS] = packetData[i + prefixLength];
+            currentFramePixel++;
+        }
+        return true;
+    }
+
+    void finalizeFrame(byte packetData[], int prefixLength, int packetLength, int frameDuration){
+        if(doesPacketFitInFrame(packetLength - prefixLength)) {
+            for(int i = 0; i < packetLength - prefixLength; i++) {
+                currentFrame[currentFramePixel / NUM_OF_LEDS][currentFramePixel % NUM_OF_LEDS] = packetData[i + prefixLength];
+                currentFramePixel++;
+            }
+        }else{
+            Serial.println("Overload Frame!");
+        }
+        
+        frameHandler->addFrame(currentFrame, frameDuration);
+        currentFramePixel = 0;
+    }
+
+    bool doesPacketFitInFrame(int payloadLength) {
+//        Serial.print(currentFramePixel);
+//        Serial.print("|");
+//        Serial.println(packetLength);
+        return (currentFramePixel + payloadLength <= MAX_DEGREE * NUM_OF_LEDS);
     }
 
     byte (*to2dArr(int a))[NUM_OF_LEDS]  {

@@ -54,7 +54,7 @@ public class UDPServerThread extends Thread {
     }
 
     private byte[] preparePrefix(int frameNumber, int angularFrameLength, int frameDuration) {
-        byte[] prefix = new byte[5];
+        byte[] prefix = new byte[4];
         prefix[0] = (byte) 'F';  // FRAME COMMAND
         prefix[1] = (byte) frameNumber;  // FRAME NUMBER 0 TO NUMBER REQUESTED - 1
 //        prefix[2] = (byte) angularFrameLength;  // USUALLY 360
