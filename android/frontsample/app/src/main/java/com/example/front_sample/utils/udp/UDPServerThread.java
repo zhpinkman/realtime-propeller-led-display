@@ -23,23 +23,20 @@ public class UDPServerThread extends Thread {
     private int androidPort, boardPort;
     private DatagramSocket socket;
     private boolean running;
-    private List<int[][]> context = new ArrayList<>();
+    private UDPHandler udpHandlerParent;
     private int frameDuration = 5000;
 
-    UDPServerThread(int androidPort, int boardPort) {
+    UDPServerThread(int androidPort, int boardPort, UDPHandler udpHandlerParent) {
         super();
         this.androidPort = androidPort;
         this.boardPort = boardPort;
-        this.context.add(new int[128][128]);
+        this.udpHandlerParent = udpHandlerParent;
     }
 
     void setRunning(boolean running) {
         this.running = running;
     }
 
-    void setContext(List<int[][]> newContext) {
-        this.context = newContext;
-    }
 
     private void sendDatagramPacket(byte[] byteBuf, InetAddress address, byte[] prefix) throws IOException {
         Log.e(TAG, String.valueOf(byteBuf.length));
@@ -96,16 +93,15 @@ public class UDPServerThread extends Thread {
                     int requestedFramesCount = Integer.parseInt(sentence);
                     if (requestedFramesCount > 0) {
                         for (int i = 0; i < requestedFramesCount; i++) {
-                            int[][] angularFrame = Utils.squareToAngular(this.context.get(0));
+                            int[][] angularFrame = udpHandlerParent.getAngularContext().get(0);
+                            System.out.println(Arrays.toString(angularFrame[0]));
                             byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame);
                             Log.e(TAG, Arrays.toString(byteBuf));
                             byte[] prefix = this.preparePrefix(i, angularFrame.length, this.frameDuration);
                             this.sendDatagramPacket(byteBuf, address, prefix);
 
-                            if (this.context.size() > 1) {
-                                this.context.remove(0);
-                            }else{
-                                break;
+                            if (!this.udpHandlerParent.popFirstAngularContext()) {
+                                break;  // size of context is 1 and can't pop
                             }
                         }
                     }

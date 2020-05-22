@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -66,7 +67,7 @@ public class Utils {
         byte[] result = new byte[height * width];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                result[i + j] = (byte) intArr[i][j];
+                result[i * width + j] = ((byte) intArr[i][j]);
             }
         }
         return result;
