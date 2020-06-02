@@ -6,6 +6,7 @@ import com.example.front_sample.config.Config;
 import com.example.front_sample.utils.Utils;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -51,6 +52,7 @@ public class UDPServerThread extends Thread {
             DatagramPacket packet = new DatagramPacket(byteChunk, byteChunk.length, address, this.boardPort);
             socket.send(packet);
         }
+        this.udpHandlerParent.log("Sent data: " + Arrays.toString(prefix) + Arrays.toString(Arrays.copyOfRange(byteBuf, 0, 5)) + "... (" + byteBuf.length + "B)");
     }
 
     private byte[] preparePrefix(int frameNumber, int angularFrameLength, int frameDuration) {
@@ -87,7 +89,7 @@ public class UDPServerThread extends Thread {
                 String sentence = new String(packet.getData(), 0, packet.getLength());
                 InetAddress address = packet.getAddress();
                 int port = packet.getPort();
-                Log.e(TAG, "Request from: " + address + ":" + port + " -> " + sentence + "\n");
+                this.udpHandlerParent.log("Request from: " + address + ":" + port + " -> " + sentence);
 
                 try {
                     int requestedFramesCount = Integer.parseInt(sentence);

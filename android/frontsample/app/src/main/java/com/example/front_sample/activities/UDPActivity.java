@@ -3,16 +3,14 @@ package com.example.front_sample.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.front_sample.R;
-import com.example.front_sample.utils.HttpHandler.HttpHandler;
 import com.example.front_sample.utils.udp.UDPHandler;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Properties;
 
 public class UDPActivity extends AppCompatActivity {
     private UDPHandler udpHandler;
@@ -21,7 +19,7 @@ public class UDPActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_udp);
-        final Button button = findViewById(R.id.button5);
+        final Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
@@ -37,6 +35,33 @@ public class UDPActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+
+        refreshLogPeriodically();
+
+    }
+
+    private void refreshLogPeriodically() {
+        final TextView logTextView = findViewById(R.id.logTextView);
+        logTextView.setMovementMethod(new ScrollingMovementMethod());
+
+        final Handler handler = new Handler();
+        final int delay = 1; //milliseconds
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                //do something
+                String logChange = udpHandler.getLogChange();
+                if(!logChange.equals("")){
+                    logTextView.append(logChange);
+                }
+                while (logTextView.canScrollVertically(1)) {
+                    logTextView.scrollBy(0, 10);
+                }
+
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
     }
 
     @Override

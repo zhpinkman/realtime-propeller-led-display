@@ -19,6 +19,7 @@ import java.util.List;
 public class UDPHandler {
     private UDPServerThread udpServerThread;
     private List<int[][]> angularContext = new ArrayList<>();
+    private String log = "";
 
     public UDPHandler() {
         this.angularContext.add(new int[Config.MAX_DEGREE][Config.NUM_OF_LEDS]);
@@ -95,6 +96,17 @@ public class UDPHandler {
 
     public void receiveBroadcast() {
 
+    }
+
+    public synchronized String getLogChange() {
+        String logCopy = log;
+        log = "";
+        return logCopy;
+    }
+
+    synchronized void log(String newLog) {
+        log = log.concat("\n" + newLog);
+        Log.e("UDP", newLog);
     }
 }
 
