@@ -65,6 +65,7 @@ int threshold = 40;
 #define BOARD_PORT 9000
 #define ANDROID_PORT 9001
 
+#define MAX_NUM_OF_REQUESTING_FRAMES 5
 
 #endif //DEFINES_H
 

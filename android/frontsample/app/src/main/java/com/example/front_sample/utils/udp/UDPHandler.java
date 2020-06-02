@@ -43,8 +43,17 @@ public class UDPHandler {
         return this.angularContext;
     }
 
+    public synchronized int[][] getCurrentFrame() {
+        return this.angularContext.get(0);
+    }
+
+    public synchronized boolean nextFrame() {
+        return this.popFirstAngularContext(); // returns false if context size is 1 and there's no next
+    }
+
     public synchronized boolean popFirstAngularContext() {  // returns false if context size is 1
         if (this.angularContext.size() > 1) {
+            this.angularContext.add(this.angularContext.get(0));
             this.angularContext.remove(0);
             return true;
         }else{

@@ -54,21 +54,21 @@ public:
 //                Serial.print("UDPCore: ");
 //                Serial.println(xPortGetCoreID());
 //
-                Serial.print("UDP Packet Type: ");
-                Serial.print(packet.isBroadcast() ? "Broadcast" : packet.isMulticast() ? "Multicast" : "Unicast");
-                Serial.print(", From: ");
-                Serial.print(packet.remoteIP());
-                Serial.print(":");
-                Serial.print(packet.remotePort());
-                Serial.print(", To: ");
-                Serial.print(packet.localIP());
-                Serial.print(":");
-                Serial.print(packet.localPort());
-                Serial.print(", Length: ");
-                Serial.print(packet.length());
-                Serial.print(", Data: ");
-                Serial.write(packet.data(), packet.length());
-                Serial.println();
+//                Serial.print("UDP Packet Type: ");
+//                Serial.print(packet.isBroadcast() ? "Broadcast" : packet.isMulticast() ? "Multicast" : "Unicast");
+//                Serial.print(", From: ");
+//                Serial.print(packet.remoteIP());
+//                Serial.print(":");
+//                Serial.print(packet.remotePort());
+//                Serial.print(", To: ");
+//                Serial.print(packet.localIP());
+//                Serial.print(":");
+//                Serial.print(packet.localPort());
+//                Serial.print(", Length: ");
+//                Serial.print(packet.length());
+//                Serial.print(", Data: ");
+//                Serial.write(packet.data(), packet.length());
+//                Serial.println();
 
                 parseCommand(packet.data(), packet.length());
 
@@ -110,6 +110,9 @@ public:
     }
 
     void finalizeFrame(byte packetData[], int prefixLength, int packetLength, int frameDuration){
+        digitalWrite(LED_BUILTIN, HIGH);
+        Serial.print("Finalizing F");
+        Serial.println(packetData[1]);
         if(doesPacketFitInFrame(packetLength - prefixLength)) {
             for(int i = 0; i < packetLength - prefixLength; i++) {
                 currentFrame[currentFramePixel / NUM_OF_LEDS][currentFramePixel % NUM_OF_LEDS] = packetData[i + prefixLength];
@@ -121,6 +124,7 @@ public:
         
         frameHandler->addFrame(currentFrame, frameDuration);
         currentFramePixel = 0;
+        digitalWrite(LED_BUILTIN, LOW);
     }
 
     bool doesPacketFitInFrame(int payloadLength) {

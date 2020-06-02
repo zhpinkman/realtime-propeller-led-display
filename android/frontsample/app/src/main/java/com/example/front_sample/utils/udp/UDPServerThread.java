@@ -25,7 +25,7 @@ public class UDPServerThread extends Thread {
     private DatagramSocket socket;
     private boolean running;
     private UDPHandler udpHandlerParent;
-    private int frameDuration = 5000;
+    private int frameDuration = 1000;
 
     UDPServerThread(int androidPort, int boardPort, UDPHandler udpHandlerParent) {
         super();
@@ -95,14 +95,14 @@ public class UDPServerThread extends Thread {
                     int requestedFramesCount = Integer.parseInt(sentence);
                     if (requestedFramesCount > 0) {
                         for (int i = 0; i < requestedFramesCount; i++) {
-                            int[][] angularFrame = udpHandlerParent.getAngularContext().get(0);
+                            int[][] angularFrame = udpHandlerParent.getCurrentFrame();
                             System.out.println(Arrays.toString(angularFrame[0]));
                             byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame);
                             Log.e(TAG, Arrays.toString(byteBuf));
                             byte[] prefix = this.preparePrefix(i, angularFrame.length, this.frameDuration);
                             this.sendDatagramPacket(byteBuf, address, prefix);
 
-                            if (!this.udpHandlerParent.popFirstAngularContext()) {
+                            if (!this.udpHandlerParent.nextFrame()) {
                                 break;  // size of context is 1 and can't pop
                             }
                         }

@@ -21,6 +21,9 @@ public:
         memcpy(pic, _pic, sizeof (byte) * MAX_DEGREE * NUM_OF_LEDS);
         duration = _duration;
         angleAccuracy = _angleAccuracy;
+        if(duration > 5000) {
+            duration = 5000;
+        }
     }
 
     int getDuration() {
@@ -45,18 +48,33 @@ private:
     Frame frames[MAX_FRAMES_ARRAY_LEN];
     int framesArrLen = 1;
     int currentFrameIndex = 0;
+    int receivingMaxWaitTime = 1000;
 
     Timer *requestTimer, *frameTimer;
     UDPBroadcast* udpBroadcast;
 
     void requestNewFrames() {
-        udpBroadcast->broadcast(String(MAX_FRAMES_ARRAY_LEN - framesArrLen));
+        int requestingFramesCount = 5;
+        if(MAX_FRAMES_ARRAY_LEN - framesArrLen < requestingFramesCount){
+            requestingFramesCount = MAX_FRAMES_ARRAY_LEN - framesArrLen;
+        }
+        Serial.print("A");
+        Serial.print(requestingFramesCount);
+        Serial.print(String(requestingFramesCount));
+        Serial.print(MAX_FRAMES_ARRAY_LEN);
+        Serial.print(framesArrLen);
+        Serial.println("B");
+        udpBroadcast->broadcast(String(requestingFramesCount));
     }
 
     int nextFrameIndex() {
-        Serial.print("F:");
-        Serial.println((currentFrameIndex + 1) % MAX_FRAMES_ARRAY_LEN);
+//        Serial.print("Frame change:");
+//        Serial.println((currentFrameIndex + 1) % MAX_FRAMES_ARRAY_LEN);
         return (currentFrameIndex + 1) % MAX_FRAMES_ARRAY_LEN;
+    }
+
+    int nextFrameToAddIndex() {
+        return (currentFrameIndex + framesArrLen) % MAX_FRAMES_ARRAY_LEN;
     }
 
 public:
@@ -70,27 +88,57 @@ public:
     }
 
     void addFrame(byte frame[MAX_DEGREE][NUM_OF_LEDS], int duration) {
-        frames[nextFrameIndex()].constructFrame(frame, duration);
-        framesArrLen++;
-        Serial.println(frame[10][10]);
+        if(framesArrLen >= MAX_FRAMES_ARRAY_LEN) {
+            slowDownReceiving();
+        }else{
+            Serial.print("nnnnnnnnn -> ");
+            Serial.println(nextFrameToAddIndex());
+            speedUpReceiving();
+            frames[nextFrameToAddIndex()].constructFrame(frame, duration);
+            framesArrLen++;
+            requestTimer->start();
+    //        Serial.println(frame[10][10]);
+        }
+    }
+
+    void speedUpReceiving() {
+        this->receivingMaxWaitTime -= 10;
+        if(this->receivingMaxWaitTime < 100) {
+            this->receivingMaxWaitTime = 100;
+        }
+    }
+
+    void slowDownReceiving() {
+        this->receivingMaxWaitTime * 2;
     }
 
     void updateFrames() {
         if(frameTimer->getElapsedTime() > frames[currentFrameIndex].getDuration()){
+            Serial.println(frameTimer->getElapsedTime());
             if(framesArrLen > 1){
                 frames[currentFrameIndex].deletePic();
                 currentFrameIndex = nextFrameIndex();
                 framesArrLen--;
+                frameTimer->start();
             }
+            Serial.print("FramesArrLen = ");
+            Serial.println(framesArrLen);
+            Serial.println(currentFrameIndex);
+            
         }
 
-        if(framesArrLen < 20 && requestTimer->getElapsedTime() > 5000) {
+        if(framesArrLen < 20 && requestTimer->getElapsedTime() > 1000) {
             requestTimer->start();
             requestNewFrames();
         }
     }
 
+    int old = 0;
     byte (*getCurrentFrame())[NUM_OF_LEDS] {
+        if(currentFrameIndex != old){
+          Serial.println(currentFrameIndex);
+          old = currentFrameIndex;
+        }
         return frames[currentFrameIndex].getPic();
     }
 
