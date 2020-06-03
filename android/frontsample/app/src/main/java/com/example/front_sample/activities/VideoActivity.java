@@ -92,16 +92,13 @@ public class VideoActivity extends AppCompatActivity {
                 Bitmap btmp = retriever.getFrameAtTime(10000*1, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
 
 
+//                int[] pixels = new int[1080*1080];
+//
+//                btmp.getPixels(pixels, 0, 1080, 300, 0, 1080, 1080);
+//
+//                Bitmap bitmap = Bitmap.createBitmap(pixels, 0, 1080, 1080, 1080, Bitmap.Config.ARGB_8888);
 
-
-
-                int[] pixels = new int[1080*1080];
-
-                btmp.getPixels(pixels, 0, 1080, 300, 0, 1080, 1080);
-
-                Bitmap bitmap = Bitmap.createBitmap(pixels, 0, 1080, 1080, 1080, Bitmap.Config.ARGB_8888);
-
-                imageView.setImageBitmap(bitmap);
+                imageView.setImageBitmap(getSquaredBitmap(btmp));
 
 
 //                String   path = null;
@@ -123,6 +120,21 @@ public class VideoActivity extends AppCompatActivity {
 //                videoView.start();
             }
         }
+    }
+
+
+    public Bitmap getSquaredBitmap(Bitmap bitmap) {
+        int height = bitmap.getHeight();
+        int width = bitmap.getWidth();
+        int minimumDimension = height < width ? height : width;
+        int[] pixels = new int[minimumDimension*minimumDimension];
+        if (minimumDimension == height) {
+            bitmap.getPixels(pixels, 0, minimumDimension, (width/2 - height/2), 0, minimumDimension, minimumDimension);
+        } else {
+            bitmap.getPixels(pixels, 0, minimumDimension, (height/2 - width/2), 0, minimumDimension, minimumDimension);
+        }
+        Bitmap result = Bitmap.createBitmap(pixels, 0, minimumDimension, minimumDimension, minimumDimension, Bitmap.Config.ARGB_8888);
+        return result;
     }
 
     public void init() {
