@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.front_sample.R;
@@ -30,9 +31,12 @@ public class VideoActivity extends AppCompatActivity {
 
         init();
 
-        playVideoRawFolder();
 
-        setMediaCont();
+//        setMediaCont();
+//
+//        playVideoRawFolder();
+
+
 
 
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -46,17 +50,31 @@ public class VideoActivity extends AppCompatActivity {
 
     public void onSend(View view) {
 
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
 
-        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        String pictureDirectoryPath = pictureDirectory.getPath();
-        Uri data = Uri.parse(pictureDirectoryPath);
+//        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+//        String pictureDirectoryPath = pictureDirectory.getPath();
+//        Uri data = Uri.parse(pictureDirectoryPath);
 
 
-        photoPickerIntent.setDataAndType(data, "video/*");
+        photoPickerIntent.setType("video/*");
 
         startActivityForResult(photoPickerIntent, VIDEO_GALLERY_REQUEST);
 
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+        if (requestCode == VIDEO_GALLERY_REQUEST && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            if (uri != null)
+            videoView.setVideoURI(uri);
+            videoView.start();
+        }
     }
 
     public void init() {
