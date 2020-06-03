@@ -40,8 +40,8 @@ public class UDPActivity extends AppCompatActivity {
                     List<int[][]> pacmanList = new ArrayList<>();
                     pacmanList.add(pac);
                     pacmanList.add(pac2);
-                    udpHandler.setAngularContext(pacmanList);
-//                    udpHandler.setAngularContext(pac2);
+//                    udpHandler.setAngularContext(pacmanList);
+                    udpHandler.setAngularContext(pac2);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

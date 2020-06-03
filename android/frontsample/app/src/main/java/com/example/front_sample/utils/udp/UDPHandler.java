@@ -10,7 +10,7 @@ import java.util.List;
 
 public class UDPHandler {
     private static volatile UDPHandler instance = new UDPHandler();
-    private UDPServerThread udpServerThread;
+    private UDPServerThread udpServerThread = null;
     private List<int[][]> angularContext = new ArrayList<>();
     private String log = "";
 
@@ -23,8 +23,10 @@ public class UDPHandler {
     }
 
     public void startServer() {
-        udpServerThread = new UDPServerThread(Config.ANDROID_PORT, Config.BOARD_PORT, this);
-        udpServerThread.start();
+        if(udpServerThread == null) {
+            udpServerThread = new UDPServerThread(Config.ANDROID_PORT, Config.BOARD_PORT, this);
+            udpServerThread.start();
+        }
     }
 
     public void stopServer() throws Exception {
@@ -58,17 +60,22 @@ public class UDPHandler {
         }
     }
 
-    public synchronized void setAngularContext(List<int[][]> newAngularContext){
+    public synchronized void setAngularContext(List<int[][]> newAngularContext){  // Board won't show it immediately
         this.angularContext = newAngularContext;
     }
 
-    public synchronized void setAngularContext(int[][] angularPic){
+    public synchronized void setAngularContext(int[][] angularPic){  // Will send and show it immediately
         List<int[][]> newContext = new ArrayList<>();
         newContext.add(angularPic);
         this.angularContext = newContext;
+        try {
+            udpServerThread.sendPictureImmediately(angularPic);
+        } catch (Exception e){
+            this.log(e.getMessage());
+        }
     }
 
-    public synchronized void setSquareContext(List<int[][]> newSquareContext){
+    public synchronized void setSquareContext(List<int[][]> newSquareContext){  // Board won't show it immediately
         List<int[][]> newAngularContext = new ArrayList<>();
         for (int[][] ctx:newSquareContext) {
             newAngularContext.add(Utils.squareToAngular(ctx));
@@ -76,10 +83,16 @@ public class UDPHandler {
         this.angularContext = newAngularContext;
     }
 
-    public synchronized void setSquareContext(int[][] squarePic) {
+    public synchronized void setSquareContext(int[][] squarePic) {  // Will send and show it immediately
         List<int[][]> newAngularContext = new ArrayList<>();
-        newAngularContext.add(Utils.squareToAngular(squarePic));
+        int[][] angularPic = Utils.squareToAngular(squarePic);
+        newAngularContext.add(angularPic);
         this.angularContext = newAngularContext;
+        try {
+            udpServerThread.sendPictureImmediately(angularPic);
+        } catch (Exception e){
+            this.log(e.getMessage());
+        }
     }
 
 //    private void updateState(final String state){
