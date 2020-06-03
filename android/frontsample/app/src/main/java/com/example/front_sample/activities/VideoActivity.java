@@ -32,7 +32,7 @@ public class VideoActivity extends AppCompatActivity {
 
         playVideoRawFolder();
 
-        setMediaCont(); 
+        setMediaCont();
 
 
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
