@@ -87,17 +87,21 @@ public class VideoActivity extends AppCompatActivity {
             Uri uri = data.getData();
             if (uri != null) {
                 MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                System.out.println(String.valueOf(uri));
-
-
                 String path = getPathFromUri(this, uri);
-                System.out.println(path);
-
                 retriever.setDataSource(this, uri);
-
                 Bitmap btmp = retriever.getFrameAtTime(10000*1, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
 
-                imageView.setImageBitmap(btmp);
+
+
+
+
+                int[] pixels = new int[1080*1080];
+
+                btmp.getPixels(pixels, 0, 1080, 300, 0, 1080, 1080);
+
+                Bitmap bitmap = Bitmap.createBitmap(pixels, 0, 1080, 1080, 1080, Bitmap.Config.ARGB_8888);
+
+                imageView.setImageBitmap(bitmap);
 
 
 //                String   path = null;
