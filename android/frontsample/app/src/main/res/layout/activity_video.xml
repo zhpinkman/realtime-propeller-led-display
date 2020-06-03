@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activities.PaintActivity">
+    tools:context=".activities.VideoActivity">
 
     <VideoView
         android:id="@+id/videoView3"
@@ -13,22 +13,20 @@
         android:layout_height="500px"
         android:layout_marginTop="82dp"
         android:layout_weight="1"
-        app:layout_constraintBottom_toTopOf="@+id/btnOneVideo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/btnOneVideo"
-        android:layout_width="match_parent"
+        android:id="@+id/button6"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="168dp"
-        android:layout_marginBottom="234dp"
-        android:layout_weight="1"
-        android:text="@string/selectVideoFromGallery"
+        android:layout_marginBottom="100dp"
+        android:onClick="onSend"
+        android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/videoView3" />
+        tools:text="@string/selectVideoFromGallery" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
