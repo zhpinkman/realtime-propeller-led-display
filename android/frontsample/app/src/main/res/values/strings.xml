@@ -4,4 +4,6 @@
     <string name="selectPaintMode">select paint mode</string>
     <string name="selectPhotoFromGallery">select photo from gallery</string>
     <string name="UDPButtonText">UDP Test</string>
+    <string name="selectVideoFromGallery">select video from gallery</string>
+    <string name="selectVideoMode">select video mode</string>
 </resources>
