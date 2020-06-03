@@ -7,7 +7,7 @@
     tools:context=".activities.MainActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/buttonYinYang"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -25,7 +25,7 @@
         android:layout_marginBottom="8dp"
         android:onClick="onGallerySelect"
         android:text="@string/selectGalleryMode"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/buttonYinYang"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
