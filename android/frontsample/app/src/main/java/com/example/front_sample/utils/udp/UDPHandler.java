@@ -2,32 +2,31 @@ package com.example.front_sample.utils.udp;
 
 import android.util.Log;
 
-import com.example.front_sample.activities.MainActivity;
 import com.example.front_sample.config.Config;
 import com.example.front_sample.utils.Utils;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class UDPHandler {
-    private UDPServerThread udpServerThread;
+    private static volatile UDPHandler instance = new UDPHandler();
+    private UDPServerThread udpServerThread = null;
     private List<int[][]> angularContext = new ArrayList<>();
     private String log = "";
 
-    public UDPHandler() {
+    private UDPHandler() {
         this.angularContext.add(new int[Config.MAX_DEGREE][Config.NUM_OF_LEDS]);
     }
 
+    public static UDPHandler getInstance() {
+        return instance;
+    }
+
     public void startServer() {
-        udpServerThread = new UDPServerThread(Config.ANDROID_PORT, Config.BOARD_PORT, this);
-        udpServerThread.start();
+        if(udpServerThread == null) {
+            udpServerThread = new UDPServerThread(Config.ANDROID_PORT, Config.BOARD_PORT, this);
+            udpServerThread.start();
+        }
     }
 
     public void stopServer() throws Exception {
@@ -53,7 +52,7 @@ public class UDPHandler {
 
     public synchronized boolean popFirstAngularContext() {  // returns false if context size is 1
         if (this.angularContext.size() > 1) {
-            this.angularContext.add(this.angularContext.get(0));
+            this.angularContext.add(this.angularContext.get(0));  // repeat
             this.angularContext.remove(0);
             return true;
         }else{
@@ -61,17 +60,22 @@ public class UDPHandler {
         }
     }
 
-    public synchronized void setAngularContext(List<int[][]> newAngularContext){
+    public synchronized void setAngularContext(List<int[][]> newAngularContext){  // Board won't show it immediately
         this.angularContext = newAngularContext;
     }
 
-    public synchronized void setAngularContext(int[][] angularPic){
+    public synchronized void setAngularContext(int[][] angularPic){  // Will send and show it immediately
         List<int[][]> newContext = new ArrayList<>();
         newContext.add(angularPic);
         this.angularContext = newContext;
+        try {
+            udpServerThread.sendPictureImmediately(angularPic);
+        } catch (Exception e){
+            this.log(e.getMessage());
+        }
     }
 
-    public synchronized void setSquareContext(List<int[][]> newSquareContext){
+    public synchronized void setSquareContext(List<int[][]> newSquareContext){  // Board won't show it immediately
         List<int[][]> newAngularContext = new ArrayList<>();
         for (int[][] ctx:newSquareContext) {
             newAngularContext.add(Utils.squareToAngular(ctx));
@@ -79,10 +83,16 @@ public class UDPHandler {
         this.angularContext = newAngularContext;
     }
 
-    public synchronized void setSquareContext(int[][] squarePic) {
+    public synchronized void setSquareContext(int[][] squarePic) {  // Will send and show it immediately
         List<int[][]> newAngularContext = new ArrayList<>();
-        newAngularContext.add(Utils.squareToAngular(squarePic));
+        int[][] angularPic = Utils.squareToAngular(squarePic);
+        newAngularContext.add(angularPic);
         this.angularContext = newAngularContext;
+        try {
+            udpServerThread.sendPictureImmediately(angularPic);
+        } catch (Exception e){
+            this.log(e.getMessage());
+        }
     }
 
 //    private void updateState(final String state){

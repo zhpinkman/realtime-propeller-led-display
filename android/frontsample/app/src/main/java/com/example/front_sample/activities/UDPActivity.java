@@ -40,8 +40,8 @@ public class UDPActivity extends AppCompatActivity {
                     List<int[][]> pacmanList = new ArrayList<>();
                     pacmanList.add(pac);
                     pacmanList.add(pac2);
-                    udpHandler.setAngularContext(pacmanList);
-//                    udpHandler.setAngularContext(pac2);
+//                    udpHandler.setAngularContext(pacmanList);
+                    udpHandler.setAngularContext(pac2);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -63,13 +63,16 @@ public class UDPActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable(){
             public void run(){
                 //do something
-                String logChange = udpHandler.getLogChange();
-                if(!logChange.equals("")){
-                    logTextView.append(logChange);
-                    while (logTextView.canScrollVertically(1)) {
-                        logTextView.scrollBy(0, 10);
+                try {
+                    String logChange = udpHandler.getLogChange();
+                    if(!logChange.equals("")){
+                        logTextView.append(logChange);
+                        while (logTextView.canScrollVertically(1)) {
+                            logTextView.scrollBy(0, 10);
+                        }
                     }
-                }
+                }catch (Exception ignored){ }
+
 
 
                 handler.postDelayed(this, delay);
@@ -79,7 +82,7 @@ public class UDPActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        udpHandler = new UDPHandler();
+        udpHandler = UDPHandler.getInstance();
         udpHandler.startServer();
         super.onStart();
     }
