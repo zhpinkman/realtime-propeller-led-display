@@ -54,16 +54,7 @@ private:
     UDPBroadcast* udpBroadcast;
 
     void requestNewFrames() {
-        int requestingFramesCount = 5;
-        if(MAX_FRAMES_ARRAY_LEN - framesArrLen < requestingFramesCount){
-            requestingFramesCount = MAX_FRAMES_ARRAY_LEN - framesArrLen;
-        }
-        Serial.print("A");
-        Serial.print(requestingFramesCount);
-        Serial.print(String(requestingFramesCount));
-        Serial.print(MAX_FRAMES_ARRAY_LEN);
-        Serial.print(framesArrLen);
-        Serial.println("B");
+        int requestingFramesCount = min(MAX_FRAMES_ARRAY_LEN - framesArrLen, MAX_NUM_OF_REQUESTING_FRAMES);
         udpBroadcast->broadcast(String(requestingFramesCount));
     }
 
@@ -91,7 +82,7 @@ public:
         if(framesArrLen >= MAX_FRAMES_ARRAY_LEN) {
             slowDownReceiving();
         }else{
-            Serial.print("nnnnnnnnn -> ");
+            Serial.print("add as frame number -> ");
             Serial.println(nextFrameToAddIndex());
             speedUpReceiving();
             frames[nextFrameToAddIndex()].constructFrame(frame, duration);
@@ -114,16 +105,15 @@ public:
 
     void updateFrames() {
         if(frameTimer->getElapsedTime() > frames[currentFrameIndex].getDuration()){
-            Serial.println(frameTimer->getElapsedTime());
             if(framesArrLen > 1){
                 frames[currentFrameIndex].deletePic();
                 currentFrameIndex = nextFrameIndex();
                 framesArrLen--;
                 frameTimer->start();
             }
-            Serial.print("FramesArrLen = ");
-            Serial.println(framesArrLen);
-            Serial.println(currentFrameIndex);
+//            Serial.print("FramesArrLen = ");
+//            Serial.println(framesArrLen);
+//            Serial.println(currentFrameIndex);
             
         }
 
@@ -133,12 +123,7 @@ public:
         }
     }
 
-    int old = 0;
     byte (*getCurrentFrame())[NUM_OF_LEDS] {
-        if(currentFrameIndex != old){
-          Serial.println(currentFrameIndex);
-          old = currentFrameIndex;
-        }
         return frames[currentFrameIndex].getPic();
     }
 

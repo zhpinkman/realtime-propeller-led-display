@@ -2,27 +2,24 @@ package com.example.front_sample.utils.udp;
 
 import android.util.Log;
 
-import com.example.front_sample.activities.MainActivity;
 import com.example.front_sample.config.Config;
 import com.example.front_sample.utils.Utils;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class UDPHandler {
+    private static volatile UDPHandler instance = new UDPHandler();
     private UDPServerThread udpServerThread;
     private List<int[][]> angularContext = new ArrayList<>();
     private String log = "";
 
-    public UDPHandler() {
+    private UDPHandler() {
         this.angularContext.add(new int[Config.MAX_DEGREE][Config.NUM_OF_LEDS]);
+    }
+
+    public static UDPHandler getInstance() {
+        return instance;
     }
 
     public void startServer() {
@@ -53,7 +50,7 @@ public class UDPHandler {
 
     public synchronized boolean popFirstAngularContext() {  // returns false if context size is 1
         if (this.angularContext.size() > 1) {
-            this.angularContext.add(this.angularContext.get(0));
+            this.angularContext.add(this.angularContext.get(0));  // repeat
             this.angularContext.remove(0);
             return true;
         }else{

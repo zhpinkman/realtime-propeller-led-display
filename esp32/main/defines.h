@@ -55,9 +55,10 @@ int threshold = 40;
 #define BRIGHTNESS_STEPS 255  // 1 <= <= 255
 #define BRIGHTNESS_CHANGE_FACTOR 3  // pow of value (brightness change factor difference in dark and bright values)
 
-#define MAX_FRAMES_ARRAY_LEN 30
-#define MAX_FRAME_WIDTH 30  // Caution Mohsen: this amount times frames array size will be allocated. (SRAM has 512KiB)
+#define MAX_FRAMES_ARRAY_LEN 31  // Caution Mohsen: this amount * MAX_DEGREE * NUM_OF_LEDS will be allocated. (SRAM has 512KiB) (32 will not work)
 #define MAX_DEGREE 360  // How accurate frames are in terms of angle (NUM_OF_LEDS determines linear accuracy)  // Caution Mohsen: this amount times frames array size will be allocated. (SRAM has 512KiB)
+
+#define MAX_FRAME_WIDTH 30  // Just for square pictures mode
 
 // NETWORK
 #define SSID "D-Link"
@@ -65,7 +66,7 @@ int threshold = 40;
 #define BOARD_PORT 9000
 #define ANDROID_PORT 9001
 
-#define MAX_NUM_OF_REQUESTING_FRAMES 5
+#define MAX_NUM_OF_REQUESTING_FRAMES 10  // Receiving frames window size
 
 #endif //DEFINES_H
 

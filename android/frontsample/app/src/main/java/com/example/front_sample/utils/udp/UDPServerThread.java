@@ -115,6 +115,7 @@ public class UDPServerThread extends Thread {
             Log.e(TAG, "UDP Server ended");
 
         } catch (Exception e) {
+            udpHandlerParent.log(e.getMessage());
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
         } finally {
