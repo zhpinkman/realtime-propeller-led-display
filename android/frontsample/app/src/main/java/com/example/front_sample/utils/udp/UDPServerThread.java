@@ -3,7 +3,7 @@ package com.example.front_sample.utils.udp;
 import android.util.Log;
 
 import com.example.front_sample.config.Config;
-import com.example.front_sample.types.DataType;
+import com.example.front_sample.types.FrameType;
 import com.example.front_sample.utils.Utils;
 
 import java.io.IOException;
@@ -42,12 +42,16 @@ public class UDPServerThread extends Thread {
     }
 
 
-    private void sendDatagramPacket(byte[] byteBuf, InetAddress address, byte[] prefix) throws IOException {
+    private synchronized void sendDatagramPacket(byte[] byteBuf, InetAddress address, byte[] prefix, FrameType frameType) throws IOException {
         Log.e(TAG, String.valueOf(byteBuf.length));
         for (int packetIndex = 0; packetIndex < byteBuf.length; packetIndex += UDP_SIZE_LIMIT_BYTES) {
 //            Log.e(TAG, String.valueOf(packetIndex));
             if (packetIndex + UDP_SIZE_LIMIT_BYTES >= byteBuf.length) {
-                prefix[0] = 'E';
+                if (frameType == FrameType.VIDEO) {
+                    prefix[0] = 'E';  // END OF FRAME COMMAND
+                } else if (frameType == FrameType.PICTURE) {
+                    prefix[0] = 'I';  // END OF IMMEDIATE PICTURE COMMAND
+                }
             }
             byte[] byteChunk = Arrays.copyOfRange(byteBuf, packetIndex, min(packetIndex + UDP_SIZE_LIMIT_BYTES, byteBuf.length));
             byteChunk = Utils.concatArrays(prefix, byteChunk);
@@ -58,13 +62,9 @@ public class UDPServerThread extends Thread {
         this.udpHandlerParent.log("Sent data: " + Arrays.toString(prefix) + Arrays.toString(Arrays.copyOfRange(byteBuf, 0, 5)) + "... (" + byteBuf.length + "B)");
     }
 
-    private byte[] preparePrefix(int frameNumber, int angularFrameLength, int frameDuration, DataType frameType) {
+    private byte[] preparePrefix(int frameNumber, int angularFrameLength, int frameDuration) {
         byte[] prefix = new byte[4];
-        if (frameType == DataType.Video) {
-            prefix[0] = (byte) 'F';  // FRAME COMMAND
-        } else if (frameType == DataType.Picture) {
-            prefix[0] = (byte) 'P';  // IMMEDIATE PICTURE COMMAND
-        }
+        prefix[0] = (byte) 'F';  // FRAME COMMAND
         prefix[1] = (byte) frameNumber;  // FRAME NUMBER 0 TO NUMBER REQUESTED - 1
 //        prefix[2] = (byte) angularFrameLength;  // USUALLY 360
 
@@ -78,10 +78,10 @@ public class UDPServerThread extends Thread {
         System.out.println(Arrays.toString(angularFrame[0]));
         byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame);
         Log.e(TAG, Arrays.toString(byteBuf));
-        byte[] prefix = this.preparePrefix(0, angularFrame.length, this.frameDuration, DataType.Picture);
-        if(this.boardAddress == null)
+        byte[] prefix = this.preparePrefix(0, angularFrame.length, this.frameDuration);
+        if (this.boardAddress == null)
             throw new Exception("Not received any request from board yet to know it's address");
-        this.sendDatagramPacket(byteBuf, this.boardAddress, prefix);
+        this.sendDatagramPacket(byteBuf, this.boardAddress, prefix, FrameType.PICTURE);
     }
 
     @Override
@@ -117,8 +117,8 @@ public class UDPServerThread extends Thread {
                             System.out.println(Arrays.toString(angularFrame[0]));
                             byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame);
                             Log.e(TAG, Arrays.toString(byteBuf));
-                            byte[] prefix = this.preparePrefix(i, angularFrame.length, this.frameDuration, DataType.Video);
-                            this.sendDatagramPacket(byteBuf, address, prefix);
+                            byte[] prefix = this.preparePrefix(i, angularFrame.length, this.frameDuration);
+                            this.sendDatagramPacket(byteBuf, address, prefix, FrameType.VIDEO);
 
                             if (!this.udpHandlerParent.nextFrame()) {
                                 break;  // size of context is 1 and can't pop

@@ -68,11 +68,7 @@ public class UDPHandler {
         List<int[][]> newContext = new ArrayList<>();
         newContext.add(angularPic);
         this.angularContext = newContext;
-        try {
-            udpServerThread.sendPictureImmediately(angularPic);
-        } catch (Exception e){
-            this.log(e.getMessage());
-        }
+        sendPictureAsync(angularPic);
     }
 
     public synchronized void setSquareContext(List<int[][]> newSquareContext){  // Board won't show it immediately
@@ -88,11 +84,28 @@ public class UDPHandler {
         int[][] angularPic = Utils.squareToAngular(squarePic);
         newAngularContext.add(angularPic);
         this.angularContext = newAngularContext;
-        try {
-            udpServerThread.sendPictureImmediately(angularPic);
-        } catch (Exception e){
-            this.log(e.getMessage());
+        sendPictureAsync(angularPic);
+    }
+
+    private void sendPictureAsync(int[][] angularPic) {
+        class AsyncThread extends Thread {
+            private int[][] angularPic;
+            private UDPHandler parent;
+            private AsyncThread(int[][] _angularPic, UDPHandler _parent) {
+                angularPic = _angularPic;
+                parent = _parent;
+            }
+            public void run() {
+                try {
+                    udpServerThread.sendPictureImmediately(angularPic);
+                } catch (Exception e) {
+                    parent.log(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
         }
+        AsyncThread asyncThread = new AsyncThread(angularPic, this);
+        asyncThread.start();
     }
 
 //    private void updateState(final String state){

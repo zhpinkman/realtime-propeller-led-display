@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".activities.UDPActivity">
 
+    <Button
+        android:id="@+id/buttonCLS"
+        android:layout_width="97dp"
+        android:layout_height="55dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="CLS"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/buttonPacman"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/logTextView"
         android:layout_width="0dp"
@@ -21,14 +33,25 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/buttonYinYang"
         android:layout_width="0dp"
-        android:layout_height="67dp"
-        android:text="Change Data"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="54dp"
+        android:layout_marginEnd="11dp"
+        android:layout_marginRight="11dp"
+        android:text="Yin Yang Pic"
+        app:layout_constraintEnd_toStartOf="@+id/buttonPacman"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.024" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonPacman"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="120dp"
+        android:layout_marginRight="120dp"
+        android:text="Pacman Video"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonYinYang"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

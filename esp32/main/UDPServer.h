@@ -93,7 +93,10 @@ public:
             }
         }
         if (command == 'E') {
-            finalizeFrame(packetData, prefixLength, packetLength, frameDuration);
+            finalizeFrame(packetData, prefixLength, packetLength, frameDuration);  // Data is a frame of video to be buffered
+        }
+        if (command == 'I') {
+            finalizeImmediateFrame(packetData, prefixLength, packetLength, frameDuration);  // Data is a picture to show immediately
         }
     }
 
@@ -123,6 +126,24 @@ public:
         }
         
         frameHandler->addFrame(currentFrame, frameDuration);
+        currentFramePixel = 0;
+        digitalWrite(LED_BUILTIN, LOW);
+    }
+
+    void finalizeImmediateFrame(byte packetData[], int prefixLength, int packetLength, int frameDuration){
+        digitalWrite(LED_BUILTIN, HIGH);
+        Serial.print("Finalizing F Immediately");
+        Serial.println(packetData[1]);
+        if(doesPacketFitInFrame(packetLength - prefixLength)) {
+            for(int i = 0; i < packetLength - prefixLength; i++) {
+                currentFrame[currentFramePixel / NUM_OF_LEDS][currentFramePixel % NUM_OF_LEDS] = packetData[i + prefixLength];
+                currentFramePixel++;
+            }
+        }else{
+            Serial.println("Overload Frame!");
+        }
+        
+        frameHandler->addFrameImmediately(currentFrame, frameDuration);
         currentFramePixel = 0;
         digitalWrite(LED_BUILTIN, LOW);
     }
