@@ -32,6 +32,7 @@ import com.example.front_sample.R;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 
 public class VideoActivity extends AppCompatActivity {
@@ -108,12 +109,28 @@ public class VideoActivity extends AppCompatActivity {
 
                 imageView.setImageBitmap(grayScaleBitmap);
 
+                ArrayList<Bitmap> videoFrames = getVideoFrames(retriever);
+
+
 //                videoView.setVideoURI(uri);
 //                setMediaCont();
 //                videoView.start();
 
             }
         }
+    }
+
+    private ArrayList<Bitmap> getVideoFrames(MediaMetadataRetriever retriever) {
+        try {
+            ArrayList<Bitmap> bArray = new ArrayList<Bitmap>();
+            bArray.clear();
+//            30 fps
+            for (int i = 0; i < 30; i++) {
+                bArray.add(retriever.getFrameAtTime(1000*i,
+                        MediaMetadataRetriever.OPTION_CLOSEST_SYNC));
+            }
+            return bArray;
+        } catch (Exception e) { return null; }
     }
 
 
