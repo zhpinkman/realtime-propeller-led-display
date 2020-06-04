@@ -96,6 +96,10 @@ public class VideoActivity extends AppCompatActivity {
                 retriever.setDataSource(this, uri);
                 Bitmap btmp = retriever.getFrameAtTime(10000*1, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
 
+                String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                long timeInMillisec = Long.parseLong(time );
+                System.out.println(timeInMillisec);
+
 
                 Bitmap squaredBitmap = getSquaredBitmap(btmp);
 
@@ -103,6 +107,10 @@ public class VideoActivity extends AppCompatActivity {
 
 
                 imageView.setImageBitmap(grayScaleBitmap);
+
+//                videoView.setVideoURI(uri);
+//                setMediaCont();
+//                videoView.start();
 
             }
         }
