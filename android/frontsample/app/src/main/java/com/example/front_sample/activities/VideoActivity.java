@@ -95,22 +95,22 @@ public class VideoActivity extends AppCompatActivity {
                 MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                 String path = getPathFromUri(this, uri);
                 retriever.setDataSource(this, uri);
-                Bitmap btmp = retriever.getFrameAtTime(10000*1, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-
-                String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                long timeInMillisec = Long.parseLong(time );
-                System.out.println(timeInMillisec);
+//                Bitmap btmp = retriever.getFrameAtTime(1000000 * 8, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
 
 
-                Bitmap squaredBitmap = getSquaredBitmap(btmp);
-
-                Bitmap grayScaleBitmap = toGrayscale(squaredBitmap);
 
 
-                imageView.setImageBitmap(grayScaleBitmap);
+//                Bitmap squaredBitmap = getSquaredBitmap(btmp);
 
-                ArrayList<Bitmap> videoFrames = getVideoFrames(retriever);
+//                Bitmap grayScaleBitmap = toGrayscale(squaredBitmap);
 
+
+//                imageView.setImageBitmap(grayScaleBitmap);
+
+                ArrayList<Bitmap> videoFrames = getVideoFrames(retriever, 30);
+
+
+                imageView.setImageBitmap(videoFrames.get(30 * 8 - 30));
 
 //                videoView.setVideoURI(uri);
 //                setMediaCont();
@@ -120,13 +120,18 @@ public class VideoActivity extends AppCompatActivity {
         }
     }
 
-    private ArrayList<Bitmap> getVideoFrames(MediaMetadataRetriever retriever) {
+    private ArrayList<Bitmap> getVideoFrames(MediaMetadataRetriever retriever, int fps) {
         try {
+            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            long duration = Long.parseLong(time);
+            long durationSeconds = duration / 1000;
             ArrayList<Bitmap> bArray = new ArrayList<Bitmap>();
             bArray.clear();
 //            30 fps
-            for (int i = 0; i < 30; i++) {
-                bArray.add(retriever.getFrameAtTime(1000*i,
+            for (int i = 0; i < fps * durationSeconds; i++) {
+                double value = i * 1000000 / fps;
+                System.out.println((long) value);
+                bArray.add(retriever.getFrameAtTime((long) value,
                         MediaMetadataRetriever.OPTION_CLOSEST_SYNC));
             }
             return bArray;
