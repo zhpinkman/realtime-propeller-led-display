@@ -5,6 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -14,6 +18,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
@@ -92,32 +97,13 @@ public class VideoActivity extends AppCompatActivity {
                 Bitmap btmp = retriever.getFrameAtTime(10000*1, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
 
 
-//                int[] pixels = new int[1080*1080];
-//
-//                btmp.getPixels(pixels, 0, 1080, 300, 0, 1080, 1080);
-//
-//                Bitmap bitmap = Bitmap.createBitmap(pixels, 0, 1080, 1080, 1080, Bitmap.Config.ARGB_8888);
+                Bitmap squaredBitmap = getSquaredBitmap(btmp);
 
-                imageView.setImageBitmap(getSquaredBitmap(btmp));
+                Bitmap grayScaleBitmap = toGrayscale(squaredBitmap);
 
 
-//                String   path = null;
-//                try {
-//                    path = getPath(this, uri);
-//                    System.out.println(path);
-//                } catch (URISyntaxException e) {
-//                    e.printStackTrace();
-//                }
-//                if(path==null) return;
-//
-//                Bitmap map= retriveVideoFrameFromVideo(path);
-//                imageView.setImageBitmap(map);
+                imageView.setImageBitmap(grayScaleBitmap);
 
-//                mediaMetadataRetriever.setDataSource(String.valueOf(uri));
-//                Bitmap bmFrame = mediaMetadataRetriever.getFrameAtTime(5000000); //unit in microsecond
-//                imageView.setImageBitmap(bmFrame);
-//                videoView.setVideoURI(uri);
-//                videoView.start();
             }
         }
     }
@@ -135,6 +121,41 @@ public class VideoActivity extends AppCompatActivity {
         }
         Bitmap result = Bitmap.createBitmap(pixels, 0, minimumDimension, minimumDimension, minimumDimension, Bitmap.Config.ARGB_8888);
         return result;
+    }
+
+    public Bitmap toGrayscale(Bitmap bmpOriginal)
+    {
+        int width, height;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();
+
+        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bmpGrayscale);
+        Paint paint = new Paint();
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+        paint.setColorFilter(f);
+        c.drawBitmap(bmpOriginal, 0, 0, paint);
+        return bmpGrayscale;
+    }
+
+
+
+    public int[][] getRGBValues(Bitmap bmp) {
+
+        int [][] rgbValues = new int[bmp.getWidth()][bmp.getHeight()];
+
+        //get the ARGB value from each pixel of the image and store it into the array
+        for(int i=0; i < bmp.getWidth(); i++)
+        {
+            for(int j=0; j < bmp.getHeight(); j++)
+            {
+                //This is a great opportunity to filter the ARGB values
+                rgbValues[i][j] = bmp.getPixel(i, j);
+            }
+        }
+        return rgbValues;
     }
 
     public void init() {
