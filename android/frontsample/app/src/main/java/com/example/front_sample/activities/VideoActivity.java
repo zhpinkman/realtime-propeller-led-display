@@ -29,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.front_sample.R;
+import com.example.front_sample.config.Config;
 import com.example.front_sample.utils.ImageHandler;
 import com.example.front_sample.utils.VideoHandler;
 import com.example.front_sample.utils.udp.UDPHandler;
@@ -77,6 +78,16 @@ public class VideoActivity extends AppCompatActivity {
         startActivityForResult(photoPickerIntent, VIDEO_GALLERY_REQUEST);
     }
 
+    public synchronized void clearVideoFrames(){
+        if(videoFrames != null) {
+            List<Bitmap> oldVideoFrames = videoFrames;
+            videoFrames.clear();
+            videoFrames = null;
+            for (Bitmap bmp: oldVideoFrames) {
+                bmp.recycle();
+            }
+        }
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -86,25 +97,19 @@ public class VideoActivity extends AppCompatActivity {
         if (requestCode == VIDEO_GALLERY_REQUEST && resultCode == RESULT_OK) {
             Uri uri = data.getData();
             if (uri != null) {
-//                Bitmap btmp = retriever.getFrameAtTime(1000000 * 8, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-//                Bitmap squaredBitmap = getSquaredBitmap(btmp);
-//                Bitmap grayScaleBitmap = toGrayscale(squaredBitmap);
-//                imageView.setImageBitmap(grayScaleBitmap);
+                clearVideoFrames();
                 Runnable r = new VideoProcessRunnable(this, uri);
                 new Thread(r).start();
 
                 videoView.setVideoURI(uri);
                 setMediaCont();
                 videoView.start();
-//                imageView.setImageBitmap(videoFrames.get(videoFrames.size() / 2));
-
                 this.refreshImagePeriodically();
             }
         }
     }
 
     public class VideoProcessRunnable implements Runnable {
-        private MediaMetadataRetriever retriever;
         private Context context;
         private Uri uri;
         public VideoProcessRunnable(Context context, Uri uri) {
@@ -127,6 +132,9 @@ public class VideoActivity extends AppCompatActivity {
 
             setTextView("Cropping center...");
             localVideoFrames = VideoHandler.cropCenter(localVideoFrames);
+
+            setTextView("Scaling down frames size...");
+            localVideoFrames = VideoHandler.scale(localVideoFrames, Config.VIDEO_SIZE, Config.VIDEO_SIZE);
 
             setTextView("Converting to grayscale...");
             localVideoFrames = VideoHandler.toGrayscale(localVideoFrames);
@@ -167,7 +175,8 @@ public class VideoActivity extends AppCompatActivity {
                 try {
                     imageView.setImageBitmap(videoFrames.get(currentShowingFrameIndex));
                     currentShowingFrameIndex = (currentShowingFrameIndex + delay / frameDuration) % videoFrames.size();
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    imageView.setImageResource(android.R.drawable.stat_notify_sync);
                 }
                 handler.postDelayed(this, delay);
             }

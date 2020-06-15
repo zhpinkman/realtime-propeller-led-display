@@ -42,6 +42,12 @@ public class ImageHandler {
         return bmpGrayscale;
     }
 
+    public static Bitmap scaleBitmap(Bitmap bmp, int newWidth, int newHeight) {
+        Bitmap newBmp = Bitmap.createScaledBitmap(bmp, newWidth, newHeight, false);
+        bmp.recycle();
+        return newBmp;
+    }
+
 
     public static int[][] getRGBValues(Bitmap bmp) {
         int[][] rgbValues = new int[bmp.getWidth()][bmp.getHeight()];

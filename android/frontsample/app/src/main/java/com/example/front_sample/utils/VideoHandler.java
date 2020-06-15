@@ -54,6 +54,15 @@ public class VideoHandler {
         return croppedList;
     }
 
+    public static List<Bitmap> scale(List<Bitmap> bmpList, int newWidth, int newHeight) {
+        List<Bitmap> croppedList = new ArrayList<>();
+        for (Bitmap bmp: bmpList) {
+            croppedList.add(ImageHandler.scaleBitmap(bmp, newWidth, newHeight));
+            bmp.recycle();
+        }
+        return croppedList;
+    }
+
     public static List<Bitmap> toGrayscale(List<Bitmap> bmpList) {
         List<Bitmap> grayscaleList = new ArrayList<>();
         for (Bitmap bmp: bmpList) {
