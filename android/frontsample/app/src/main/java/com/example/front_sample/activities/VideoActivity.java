@@ -1,23 +1,21 @@
 package com.example.front_sample.activities;
 
+import android.Manifest;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,59 +25,51 @@ import android.widget.VideoView;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.example.front_sample.R;
+import com.example.front_sample.utils.VideoHandler;
 
-import java.io.File;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 
 public class VideoActivity extends AppCompatActivity {
 
     private static final int VIDEO_GALLERY_REQUEST = 30;
+    private static final String TAG = "Permission Error";
     private VideoView videoView;
     private ImageView imageView;
     private MediaController mediaController;
+
+    private int currentShowingFrameIndex = 0;
+    private ArrayList<Bitmap> videoFrames = null;
+    private int frameDuration = 16;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
-
-
+        this.isStoragePermissionGranted();
         init();
-
-
 //        setMediaCont();
-//
 //        playVideoRawFolder();
-
-
-
-
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mp.setLooping(true);
             }
         });
+        this.refreshImagePeriodically();
     }
 
 
     public void onSend(View view) {
-
         Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-
 //        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 //        String pictureDirectoryPath = pictureDirectory.getPath();
 //        Uri data = Uri.parse(pictureDirectoryPath);
-
-
         photoPickerIntent.setType("video/*");
-
         startActivityForResult(photoPickerIntent, VIDEO_GALLERY_REQUEST);
-
     }
 
 
@@ -88,7 +78,6 @@ public class VideoActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
         if (requestCode == VIDEO_GALLERY_REQUEST && resultCode == RESULT_OK) {
             Uri uri = data.getData();
             if (uri != null) {
@@ -96,97 +85,35 @@ public class VideoActivity extends AppCompatActivity {
                 String path = getPathFromUri(this, uri);
                 retriever.setDataSource(this, uri);
 //                Bitmap btmp = retriever.getFrameAtTime(1000000 * 8, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-
-
-
-
 //                Bitmap squaredBitmap = getSquaredBitmap(btmp);
-
 //                Bitmap grayScaleBitmap = toGrayscale(squaredBitmap);
-
-
 //                imageView.setImageBitmap(grayScaleBitmap);
-
-                ArrayList<Bitmap> videoFrames = getVideoFrames(retriever, 30);
-
-
-                imageView.setImageBitmap(videoFrames.get(30 * 8 - 30));
-
+                videoFrames = VideoHandler.getVideoFrames(retriever, 10);
+                assert videoFrames != null;
+                imageView.setImageBitmap(videoFrames.get(videoFrames.size() / 2));
 //                videoView.setVideoURI(uri);
 //                setMediaCont();
 //                videoView.start();
-
             }
         }
     }
 
-    private ArrayList<Bitmap> getVideoFrames(MediaMetadataRetriever retriever, int fps) {
-        try {
-            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            long duration = Long.parseLong(time);
-            long durationSeconds = duration / 1000;
-            ArrayList<Bitmap> bArray = new ArrayList<Bitmap>();
-            bArray.clear();
-//            30 fps
-            for (int i = 0; i < fps * durationSeconds; i++) {
-                double value = i * 1000000 / fps;
-                System.out.println((long) value);
-                bArray.add(retriever.getFrameAtTime((long) value,
-                        MediaMetadataRetriever.OPTION_CLOSEST_SYNC));
+    private void refreshImagePeriodically() {
+        final Handler handler = new Handler();
+        final int delay = 16; //milliseconds
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                //do something
+                try {
+                    imageView.setImageBitmap(videoFrames.get(currentShowingFrameIndex));
+                    currentShowingFrameIndex = (currentShowingFrameIndex + 1) % videoFrames.size();
+                } catch (Exception ignored) {
+                }
+                handler.postDelayed(this, delay);
             }
-            return bArray;
-        } catch (Exception e) { return null; }
+        }, delay);
     }
 
-
-    public Bitmap getSquaredBitmap(Bitmap bitmap) {
-        int height = bitmap.getHeight();
-        int width = bitmap.getWidth();
-        int minimumDimension = height < width ? height : width;
-        int[] pixels = new int[minimumDimension*minimumDimension];
-        if (minimumDimension == height) {
-            bitmap.getPixels(pixels, 0, minimumDimension, (width/2 - height/2), 0, minimumDimension, minimumDimension);
-        } else {
-            bitmap.getPixels(pixels, 0, minimumDimension, (height/2 - width/2), 0, minimumDimension, minimumDimension);
-        }
-        Bitmap result = Bitmap.createBitmap(pixels, 0, minimumDimension, minimumDimension, minimumDimension, Bitmap.Config.ARGB_8888);
-        return result;
-    }
-
-    public Bitmap toGrayscale(Bitmap bmpOriginal)
-    {
-        int width, height;
-        height = bmpOriginal.getHeight();
-        width = bmpOriginal.getWidth();
-
-        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(bmpGrayscale);
-        Paint paint = new Paint();
-        ColorMatrix cm = new ColorMatrix();
-        cm.setSaturation(0);
-        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
-        paint.setColorFilter(f);
-        c.drawBitmap(bmpOriginal, 0, 0, paint);
-        return bmpGrayscale;
-    }
-
-
-
-    public int[][] getRGBValues(Bitmap bmp) {
-
-        int [][] rgbValues = new int[bmp.getWidth()][bmp.getHeight()];
-
-        //get the ARGB value from each pixel of the image and store it into the array
-        for(int i=0; i < bmp.getWidth(); i++)
-        {
-            for(int j=0; j < bmp.getHeight(); j++)
-            {
-                //This is a great opportunity to filter the ARGB values
-                rgbValues[i][j] = bmp.getPixel(i, j);
-            }
-        }
-        return rgbValues;
-    }
 
     public void init() {
         videoView = findViewById(R.id.videoView3);
@@ -252,7 +179,7 @@ public class VideoActivity extends AppCompatActivity {
                 }
 
                 final String selection = "_id=?";
-                final String[] selectionArgs = new String[] {
+                final String[] selectionArgs = new String[]{
                         split[1]
                 };
 
@@ -302,8 +229,6 @@ public class VideoActivity extends AppCompatActivity {
 
     /**
      * @param uri The Uri to check.
-
-
      * @return Whether the Uri authority is ExternalStorageProvider.
      */
     public static boolean isExternalStorageDocument(Uri uri) {
@@ -332,6 +257,25 @@ public class VideoActivity extends AppCompatActivity {
      */
     public static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+
+
+    public boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG, "Permission is granted");
+                return true;
+            } else {
+
+                Log.v(TAG, "Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG, "Permission is granted");
+            return true;
+        }
     }
 
 
