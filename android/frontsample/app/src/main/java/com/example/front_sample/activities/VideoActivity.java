@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.TextView;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
@@ -30,8 +31,10 @@ import androidx.core.app.ActivityCompat;
 import com.example.front_sample.R;
 import com.example.front_sample.utils.ImageHandler;
 import com.example.front_sample.utils.VideoHandler;
+import com.example.front_sample.utils.udp.UDPHandler;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class VideoActivity extends AppCompatActivity {
@@ -40,11 +43,13 @@ public class VideoActivity extends AppCompatActivity {
     private static final String TAG = "Permission Error";
     private VideoView videoView;
     private ImageView imageView;
+    private TextView textView;
     private MediaController mediaController;
+    private UDPHandler udpHandler = UDPHandler.getInstance();
 
     private int currentShowingFrameIndex = 0;
-    private ArrayList<Bitmap> videoFrames = null;
-    private int frameDuration = 50;  //ms
+    private volatile List<Bitmap> videoFrames = null;
+    private volatile int frameDuration = 50;  //ms
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +65,6 @@ public class VideoActivity extends AppCompatActivity {
                 mp.setLooping(true);
             }
         });
-        this.refreshImagePeriodically();
     }
 
 
@@ -82,34 +86,89 @@ public class VideoActivity extends AppCompatActivity {
         if (requestCode == VIDEO_GALLERY_REQUEST && resultCode == RESULT_OK) {
             Uri uri = data.getData();
             if (uri != null) {
-                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                String path = getPathFromUri(this, uri);
-                retriever.setDataSource(this, uri);
 //                Bitmap btmp = retriever.getFrameAtTime(1000000 * 8, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
 //                Bitmap squaredBitmap = getSquaredBitmap(btmp);
 //                Bitmap grayScaleBitmap = toGrayscale(squaredBitmap);
 //                imageView.setImageBitmap(grayScaleBitmap);
-                videoFrames = VideoHandler.getVideoFrames(retriever, frameDuration);
+                Runnable r = new VideoProcessRunnable(this, uri);
+                new Thread(r).start();
+
+                videoView.setVideoURI(uri);
+                setMediaCont();
+                videoView.start();
 //                imageView.setImageBitmap(videoFrames.get(videoFrames.size() / 2));
-//                videoView.setVideoURI(uri);
-//                setMediaCont();
-//                videoView.start();
+
+                this.refreshImagePeriodically();
             }
         }
     }
 
-    private void refreshImagePeriodically() {
+    public class VideoProcessRunnable implements Runnable {
+        private MediaMetadataRetriever retriever;
+        private Context context;
+        private Uri uri;
+        public VideoProcessRunnable(Context context, Uri uri) {
+            this.context = context;
+            this.uri = uri;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        public void run() {
+            System.out.println("videoProcessThread running");
+
+            setTextView("Starting Video Processing...");
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            String path = getPathFromUri(context, uri);
+            retriever.setDataSource(context, uri);
+
+            setTextView("Retrieving Video Frames...");
+            List<Bitmap> localVideoFrames;
+            localVideoFrames = VideoHandler.getVideoFrames(retriever, frameDuration);
+
+            setTextView("Cropping center...");
+            localVideoFrames = VideoHandler.cropCenter(localVideoFrames);
+
+            setTextView("Converting to grayscale...");
+            localVideoFrames = VideoHandler.toGrayscale(localVideoFrames);
+
+            setTextView("Sending video to udp handler...");
+            udpHandler.setSquareContext(VideoHandler.bmpToArray(localVideoFrames));
+
+            setVideoFrames(localVideoFrames);
+            setTextView("Video Processing Finished");
+        }
+    }
+
+    private void setTextView(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textView.setText(text);
+            }
+        });
+    }
+
+    private synchronized void setVideoFrames(final List<Bitmap> newFrames){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("NEW FRAMES" + newFrames.size());
+                videoFrames = newFrames;
+            }
+        });
+    }
+
+    private synchronized void refreshImagePeriodically() {
         final Handler handler = new Handler();
-        final int delay = 500; //milliseconds
+        final int delay = 1000; //milliseconds
         handler.postDelayed(new Runnable() {
             public void run() {
                 //do something
                 try {
-                    imageView.setImageBitmap(ImageHandler.toGrayscale(videoFrames.get(currentShowingFrameIndex)));
-                    currentShowingFrameIndex = (currentShowingFrameIndex + delay/frameDuration) % videoFrames.size();
+                    imageView.setImageBitmap(videoFrames.get(currentShowingFrameIndex));
+                    currentShowingFrameIndex = (currentShowingFrameIndex + delay / frameDuration) % videoFrames.size();
                 } catch (Exception ignored) {
                 }
-                System.out.println(currentShowingFrameIndex);
                 handler.postDelayed(this, delay);
             }
         }, delay);
@@ -119,6 +178,7 @@ public class VideoActivity extends AppCompatActivity {
     public void init() {
         videoView = findViewById(R.id.videoView3);
         imageView = findViewById(R.id.imageView2);
+        textView = findViewById(R.id.textView);
         this.mediaController = new MediaController(this);
     }
 

@@ -3,6 +3,7 @@ package com.example.front_sample.utils.udp;
 import android.util.Log;
 
 import com.example.front_sample.config.Config;
+import com.example.front_sample.utils.ImageHandler;
 import com.example.front_sample.utils.Utils;
 
 import java.util.ArrayList;
@@ -74,14 +75,14 @@ public class UDPHandler {
     public synchronized void setSquareContext(List<int[][]> newSquareContext){  // Board won't show it immediately
         List<int[][]> newAngularContext = new ArrayList<>();
         for (int[][] ctx:newSquareContext) {
-            newAngularContext.add(Utils.squareToAngular(ctx));
+            newAngularContext.add(ImageHandler.squareToAngular(ctx));
         }
         this.angularContext = newAngularContext;
     }
 
     public synchronized void setSquareContext(int[][] squarePic) {  // Will send and show it immediately
         List<int[][]> newAngularContext = new ArrayList<>();
-        int[][] angularPic = Utils.squareToAngular(squarePic);
+        int[][] angularPic = ImageHandler.squareToAngular(squarePic);
         newAngularContext.add(angularPic);
         this.angularContext = newAngularContext;
         sendPictureAsync(angularPic);
