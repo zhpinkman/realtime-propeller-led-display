@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.front_sample.R;
+import com.example.front_sample.utils.ImageHandler;
 import com.example.front_sample.utils.VideoHandler;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class VideoActivity extends AppCompatActivity {
 
     private int currentShowingFrameIndex = 0;
     private ArrayList<Bitmap> videoFrames = null;
-    private int frameDuration = 16;
+    private int frameDuration = 50;  //ms
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,9 +89,8 @@ public class VideoActivity extends AppCompatActivity {
 //                Bitmap squaredBitmap = getSquaredBitmap(btmp);
 //                Bitmap grayScaleBitmap = toGrayscale(squaredBitmap);
 //                imageView.setImageBitmap(grayScaleBitmap);
-                videoFrames = VideoHandler.getVideoFrames(retriever, 10);
-                assert videoFrames != null;
-                imageView.setImageBitmap(videoFrames.get(videoFrames.size() / 2));
+                videoFrames = VideoHandler.getVideoFrames(retriever, frameDuration);
+//                imageView.setImageBitmap(videoFrames.get(videoFrames.size() / 2));
 //                videoView.setVideoURI(uri);
 //                setMediaCont();
 //                videoView.start();
@@ -100,15 +100,16 @@ public class VideoActivity extends AppCompatActivity {
 
     private void refreshImagePeriodically() {
         final Handler handler = new Handler();
-        final int delay = 16; //milliseconds
+        final int delay = 500; //milliseconds
         handler.postDelayed(new Runnable() {
             public void run() {
                 //do something
                 try {
-                    imageView.setImageBitmap(videoFrames.get(currentShowingFrameIndex));
-                    currentShowingFrameIndex = (currentShowingFrameIndex + 1) % videoFrames.size();
+                    imageView.setImageBitmap(ImageHandler.toGrayscale(videoFrames.get(currentShowingFrameIndex)));
+                    currentShowingFrameIndex = (currentShowingFrameIndex + delay/frameDuration) % videoFrames.size();
                 } catch (Exception ignored) {
                 }
+                System.out.println(currentShowingFrameIndex);
                 handler.postDelayed(this, delay);
             }
         }, delay);
