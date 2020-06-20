@@ -54,8 +54,8 @@ public class VideoActivity extends AppCompatActivity {
     private SeekBar outputSeekBar;
     private TextView samplingSeekBarText;
     private TextView outputSeekBarText;
-    private int samplingRate = 10;
-    private int outputRate = 10;
+    private int sampleDuration = 10;
+    private int outputDuration = 10;
 
     private int currentShowingFrameIndex = 0;
     private volatile List<Bitmap> videoFrames = null;
@@ -87,8 +87,8 @@ public class VideoActivity extends AppCompatActivity {
         outputSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                outputRate = 10 + progress;
-                outputSeekBarText.setText("" + outputRate + " ms");
+                outputDuration = 10 + progress;
+                outputSeekBarText.setText("" + outputDuration + " ms");
             }
 
             @Override
@@ -105,8 +105,8 @@ public class VideoActivity extends AppCompatActivity {
         samplingSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                samplingRate = 10 + progress;
-                samplingSeekBarText.setText("" + samplingRate + " ms");
+                sampleDuration = 10 + progress;
+                samplingSeekBarText.setText("" + sampleDuration + " ms");
             }
 
             @Override
@@ -183,7 +183,7 @@ public class VideoActivity extends AppCompatActivity {
 
             setTextView("Retrieving Video Frames...");
             List<Bitmap> localVideoFrames;
-            localVideoFrames = VideoHandler.getVideoFrames(retriever, frameDuration);
+            localVideoFrames = VideoHandler.getVideoFrames(retriever, sampleDuration);
 
             setTextView("Cropping center...");
             localVideoFrames = VideoHandler.cropCenter(localVideoFrames);
