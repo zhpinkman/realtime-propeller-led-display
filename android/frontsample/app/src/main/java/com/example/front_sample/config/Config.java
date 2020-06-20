@@ -9,4 +9,5 @@ public class Config {
     public static final int UDP_SIZE_LIMIT_BYTES = 1000;
 
     public static final int VIDEO_SIZE = 128;
+    public static final int IMAGE_SIZE = 128;
 }

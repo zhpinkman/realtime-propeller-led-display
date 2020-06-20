@@ -87,4 +87,20 @@ public class ImageHandler {
         }
         return angularResult;
     }
+
+
+    public static int[][] bmpToArray(Bitmap bmp) {
+        int[][] grayscaleFrame = new int[bmp.getWidth()][bmp.getHeight()];
+        for (int i = 0; i < bmp.getWidth(); i++) {
+            for (int j = 0; j < bmp.getHeight(); j++) {
+                //This is a great opportunity to filter the ARGB values
+                int p = bmp.getPixel(i, j);
+                int R = (p >> 16) & 0xff;
+                int G = (p >> 8) & 0xff;
+                int B = p & 0xff;
+                grayscaleFrame[i][j] = (R + G + B) / 3;
+            }
+        }
+        return grayscaleFrame;
+    }
 }

@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.front_sample.R;
 import com.example.front_sample.config.Config;
+import com.example.front_sample.utils.ImageHandler;
 import com.example.front_sample.utils.VideoHandler;
 import com.example.front_sample.utils.udp.UDPHandler;
 
@@ -99,18 +100,18 @@ public class GalleryActivity extends AppCompatActivity {
             System.out.println("galleryProcessThread running");
 
             setTextView("Cropping center...");
-            localVideoFrames = VideoHandler.cropCenter(localVideoFrames);
+            bitmap = ImageHandler.cropCenter(bitmap);
 
             setTextView("Scaling down frames size...");
-            localVideoFrames = VideoHandler.scale(localVideoFrames, Config.VIDEO_SIZE, Config.VIDEO_SIZE);
+            bitmap = ImageHandler.scaleBitmap(bitmap, Config.IMAGE_SIZE, Config.IMAGE_SIZE);
 
             setTextView("Converting to grayscale...");
-            localVideoFrames = VideoHandler.toGrayscale(localVideoFrames);
+            bitmap = ImageHandler.toGrayscale(bitmap);
 
             setTextView("Sending video to udp handler...");
-            udpHandler.setSquareContext(VideoHandler.bmpToArray(localVideoFrames));
+            udpHandler.setSquareContext(ImageHandler.bmpToArray(bitmap));
 
-            setVideoFrames(localVideoFrames);
+//            setVideoFrames(localVideoFrames);
             setTextView("Video Processing Finished");
         }
     }
