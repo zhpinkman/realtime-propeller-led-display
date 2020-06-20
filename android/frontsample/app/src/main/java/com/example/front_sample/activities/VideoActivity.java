@@ -51,8 +51,11 @@ public class VideoActivity extends AppCompatActivity {
     private MediaController mediaController;
     private UDPHandler udpHandler = UDPHandler.getInstance();
     private SeekBar samplingSeekBar;
+    private SeekBar outputSeekBar;
     private TextView samplingSeekBarText;
+    private TextView outputSeekBarText;
     private int samplingRate = 10;
+    private int outputRate = 10;
 
     private int currentShowingFrameIndex = 0;
     private volatile List<Bitmap> videoFrames = null;
@@ -78,6 +81,26 @@ public class VideoActivity extends AppCompatActivity {
 
         samplingSeekBar = (SeekBar) findViewById(R.id.seekBar);
         samplingSeekBarText = (TextView) findViewById(R.id.textView3);
+        outputSeekBar = (SeekBar) findViewById(R.id.seekBar2);
+        outputSeekBarText = (TextView) findViewById(R.id.textView4);
+
+        outputSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                outputRate = 10 + progress;
+                outputSeekBarText.setText("" + outputRate + " ms");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         samplingSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
