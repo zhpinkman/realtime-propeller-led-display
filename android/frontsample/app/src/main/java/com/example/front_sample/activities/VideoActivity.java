@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -34,6 +35,8 @@ import com.example.front_sample.utils.ImageHandler;
 import com.example.front_sample.utils.VideoHandler;
 import com.example.front_sample.utils.udp.UDPHandler;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +50,9 @@ public class VideoActivity extends AppCompatActivity {
     private TextView textView;
     private MediaController mediaController;
     private UDPHandler udpHandler = UDPHandler.getInstance();
+    private SeekBar samplingSeekBar;
+    private TextView samplingSeekBarText;
+    private int samplingRate = 10;
 
     private int currentShowingFrameIndex = 0;
     private volatile List<Bitmap> videoFrames = null;
@@ -54,6 +60,8 @@ public class VideoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
         this.isStoragePermissionGranted();
@@ -66,6 +74,30 @@ public class VideoActivity extends AppCompatActivity {
                 mp.setLooping(true);
             }
         });
+
+
+        samplingSeekBar = (SeekBar) findViewById(R.id.seekBar);
+        samplingSeekBarText = (TextView) findViewById(R.id.textView3);
+
+        samplingSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                samplingRate = 10 + progress;
+                samplingSeekBarText.setText("" + samplingRate + " ms");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+
     }
 
 
@@ -123,7 +155,7 @@ public class VideoActivity extends AppCompatActivity {
 
             setTextView("Starting Video Processing...");
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            String path = getPathFromUri(context, uri);
+//            String path = getPathFromUri(context, uri);
             retriever.setDataSource(context, uri);
 
             setTextView("Retrieving Video Frames...");
@@ -139,8 +171,8 @@ public class VideoActivity extends AppCompatActivity {
             setTextView("Converting to grayscale...");
             localVideoFrames = VideoHandler.toGrayscale(localVideoFrames);
 
-            setTextView("Sending video to udp handler...");
-            udpHandler.setSquareContext(VideoHandler.bmpToArray(localVideoFrames));
+//            setTextView("Sending video to udp handler...");
+//            udpHandler.setSquareContext(VideoHandler.bmpToArray(localVideoFrames));
 
             setVideoFrames(localVideoFrames);
             setTextView("Video Processing Finished");
@@ -173,7 +205,7 @@ public class VideoActivity extends AppCompatActivity {
             public void run() {
                 //do something
                 try {
-                    imageView.setImageBitmap(videoFrames.get(currentShowingFrameIndex));
+//                    imageView.setImageBitmap(videoFrames.get(currentShowingFrameIndex));
                     currentShowingFrameIndex = (currentShowingFrameIndex + delay / frameDuration) % videoFrames.size();
                 } catch (Exception e) {
                     imageView.setImageResource(android.R.drawable.stat_notify_sync);
@@ -186,7 +218,7 @@ public class VideoActivity extends AppCompatActivity {
 
     public void init() {
         videoView = findViewById(R.id.videoView3);
-        imageView = findViewById(R.id.imageView2);
+//        imageView = findViewById(R.id.imageView2);
         textView = findViewById(R.id.textView);
         this.mediaController = new MediaController(this);
     }
