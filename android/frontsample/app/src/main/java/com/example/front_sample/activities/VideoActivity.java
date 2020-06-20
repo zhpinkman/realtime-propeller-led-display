@@ -194,8 +194,8 @@ public class VideoActivity extends AppCompatActivity {
             setTextView("Converting to grayscale...");
             localVideoFrames = VideoHandler.toGrayscale(localVideoFrames);
 
-//            setTextView("Sending video to udp handler...");
-//            udpHandler.setSquareContext(VideoHandler.bmpToArray(localVideoFrames));
+            setTextView("Sending video to udp handler...");
+            udpHandler.setSquareContext(VideoHandler.bmpToArray(localVideoFrames));
 
             setVideoFrames(localVideoFrames);
             setTextView("Video Processing Finished");

@@ -1,33 +1,45 @@
 package com.example.front_sample.activities;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.front_sample.R;
+import com.example.front_sample.config.Config;
+import com.example.front_sample.utils.VideoHandler;
+import com.example.front_sample.utils.udp.UDPHandler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.List;
 
 public class GalleryActivity extends AppCompatActivity {
 
     public static final int IMAGE_GALLERY_REQUEST = 20;
+    private TextView textView;
+    private UDPHandler udpHandler = UDPHandler.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
+        textView = (TextView) findViewById(R.id.textView6);
     }
 
 
@@ -54,10 +66,15 @@ public class GalleryActivity extends AppCompatActivity {
                 Uri imageUri = data.getData();
                 InputStream inputStream;;
 
+
                 try {
                     inputStream = getContentResolver().openInputStream(imageUri);
 //                    byte[] inputData = getBytes(inputStream);
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+                    Runnable r = new GalleryActivity.GalleryProcessRunnable(bitmap);
+                    new Thread(r).start();
+
                     int[][] rgbValues = getRGBValues(bitmap);
                     ((ImageView) findViewById(R.id.imageView)).setImageBitmap(bitmap);
 
@@ -67,6 +84,45 @@ public class GalleryActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+
+    public class GalleryProcessRunnable implements Runnable {
+        private Bitmap bitmap;
+
+        public GalleryProcessRunnable(Bitmap bitmap) {
+            this.bitmap = bitmap;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        public void run() {
+            System.out.println("galleryProcessThread running");
+
+            setTextView("Cropping center...");
+            localVideoFrames = VideoHandler.cropCenter(localVideoFrames);
+
+            setTextView("Scaling down frames size...");
+            localVideoFrames = VideoHandler.scale(localVideoFrames, Config.VIDEO_SIZE, Config.VIDEO_SIZE);
+
+            setTextView("Converting to grayscale...");
+            localVideoFrames = VideoHandler.toGrayscale(localVideoFrames);
+
+            setTextView("Sending video to udp handler...");
+            udpHandler.setSquareContext(VideoHandler.bmpToArray(localVideoFrames));
+
+            setVideoFrames(localVideoFrames);
+            setTextView("Video Processing Finished");
+        }
+    }
+
+
+    private void setTextView(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textView.setText(text);
+            }
+        });
     }
 
     public int[][] getRGBValues(Bitmap bmp) {
