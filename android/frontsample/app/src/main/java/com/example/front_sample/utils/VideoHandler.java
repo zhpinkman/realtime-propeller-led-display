@@ -53,6 +53,11 @@ public class VideoHandler {
         }
     }
 
+    public static Bitmap getVideoFrame(MediaMetadataRetriever retriever, int timeMs) {
+        return retriever.getFrameAtTime((long) timeMs * 1000,
+                MediaMetadataRetriever.OPTION_CLOSEST);
+    }
+
     public static List<Bitmap> cropCenter(List<Bitmap> bmpList) {
         List<Bitmap> croppedList = new ArrayList<>();
         for (Bitmap bmp: bmpList) {

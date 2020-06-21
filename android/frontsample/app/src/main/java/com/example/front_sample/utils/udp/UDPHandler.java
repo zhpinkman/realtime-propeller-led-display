@@ -89,6 +89,10 @@ public class UDPHandler {
         sendPictureAsync(angularPic);
     }
 
+    public synchronized void appendSquareContext(int[][] squarePic) {
+        this.angularContext.add(squarePic);
+    }
+
     public synchronized void setFrameDuration(int frameDuration) throws Exception {
         if(frameDuration < 10 || frameDuration > 5000) {
             throw new Exception("10 < FrameDuration < 5000");
@@ -151,7 +155,7 @@ public class UDPHandler {
 
     synchronized void log(String newLog) {
         log = log.concat("\n" + newLog);
-        Log.e("UDP", newLog);
+        Log.d("UDP", newLog);
     }
 }
 
