@@ -56,6 +56,7 @@ public class PaintView extends View {
     }
 
     public void init(DisplayMetrics metrics) {
+        udpHandler.startServer();
         int height = metrics.heightPixels;
         int width = metrics.widthPixels;
 
