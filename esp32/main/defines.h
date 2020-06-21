@@ -51,7 +51,7 @@
 
 int threshold = 40;
 #define PI 3.14159265
-#define MAX_BRIGHTNESS 2  // 0 <= <= 255
+#define MAX_BRIGHTNESS 5  // 0 <= <= 255
 #define BRIGHTNESS_STEPS 255  // 1 <= <= 255
 #define BRIGHTNESS_CHANGE_FACTOR 3  // pow of value (brightness change factor difference in dark and bright values)
 

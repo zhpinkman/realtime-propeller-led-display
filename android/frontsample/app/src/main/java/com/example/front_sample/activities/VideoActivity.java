@@ -194,7 +194,7 @@ public class VideoActivity extends AppCompatActivity {
 
             setTextView("Retrieving Video Frames...");
             List<Bitmap> localVideoFrames;
-            localVideoFrames = VideoHandler.getVideoFrames(retriever, sampleDuration);
+            localVideoFrames = VideoHandler.getVideoFrames(retriever, sampleDuration, context);
 
             setTextView("Cropping center...");
             localVideoFrames = VideoHandler.cropCenter(localVideoFrames);
@@ -206,14 +206,16 @@ public class VideoActivity extends AppCompatActivity {
             localVideoFrames = VideoHandler.toGrayscale(localVideoFrames);
 
             setTextView("Sending video to udp handler...");
-            udpHandler.setSquareContext(VideoHandler.bmpToArray(localVideoFrames));
+            List<int[][]> framesBrightnessList = VideoHandler.bmpToArray(localVideoFrames);
+            udpHandler.setSquareContext(framesBrightnessList.get(0));  // To remove old movie from board
+            udpHandler.setSquareContext(framesBrightnessList);
 
             setVideoFrames(localVideoFrames);
             setTextView("Video Processing Finished");
         }
     }
 
-    private void setTextView(final String text) {
+    public synchronized void setTextView(final String text) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -234,17 +236,17 @@ public class VideoActivity extends AppCompatActivity {
 
     private synchronized void refreshImagePeriodically() {
         final Handler handler = new Handler();
-        final int delay = 1000; //milliseconds
+        final int delay = 60; //milliseconds
         handler.postDelayed(new Runnable() {
             public void run() {
                 //do something
                 try {
                     imageView.setImageBitmap(videoFrames.get(currentShowingFrameIndex));
-                    currentShowingFrameIndex = (currentShowingFrameIndex + delay / frameDuration) % videoFrames.size();
+                    currentShowingFrameIndex = (currentShowingFrameIndex + 1) % videoFrames.size();
                 } catch (Exception e) {
                     imageView.setImageResource(android.R.drawable.stat_notify_sync);
                 }
-                handler.postDelayed(this, delay);
+                handler.postDelayed(this, outputDuration);
             }
         }, delay);
     }

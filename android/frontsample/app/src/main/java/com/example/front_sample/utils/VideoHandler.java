@@ -1,9 +1,13 @@
 package com.example.front_sample.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 
+import com.example.front_sample.activities.VideoActivity;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class VideoHandler {
@@ -27,7 +31,7 @@ public class VideoHandler {
         }
     }
 
-    public static ArrayList<Bitmap> getVideoFrames(MediaMetadataRetriever retriever, int frameDuration) {  // frameDuration in ms
+    public static ArrayList<Bitmap> getVideoFrames(MediaMetadataRetriever retriever, int frameDuration, Context context) {  // frameDuration in ms
         try {
             String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             long duration = Long.parseLong(time);  //ms
@@ -35,9 +39,13 @@ public class VideoHandler {
             bArray.clear();
             for (int i = 0; i < duration; i += frameDuration) {
                 double value = i * 1000;
-//                System.out.println((long) value);
-                bArray.add(retriever.getFrameAtTime((long) value,
-                        MediaMetadataRetriever.OPTION_CLOSEST_SYNC));
+                VideoActivity va = (VideoActivity) context;
+                va.setTextView("Retrieving Video Frames " + i + "/" + duration + "ms");
+//                System.out.println("RETRIEVE" + (long) value);
+                Bitmap newBmp = retriever.getFrameAtTime((long) value,
+                        MediaMetadataRetriever.OPTION_CLOSEST);
+                bArray.add(newBmp);
+//                System.out.println("RETRET" + newBmp);
             }
             return bArray;
         } catch (Exception e) {
