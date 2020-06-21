@@ -54,8 +54,8 @@ public class VideoActivity extends AppCompatActivity {
     private SeekBar outputSeekBar;
     private TextView samplingSeekBarText;
     private TextView outputSeekBarText;
-    private int sampleDuration = 10;
-    private int outputDuration = 10;
+    private int sampleDuration = 50;
+    private int outputDuration = 500;
 
     private int currentShowingFrameIndex = 0;
     private volatile List<Bitmap> videoFrames = null;
@@ -107,6 +107,7 @@ public class VideoActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 sampleDuration = 10 + progress;
                 samplingSeekBarText.setText("" + sampleDuration + " ms");
+                frameDuration = sampleDuration;
             }
 
             @Override
@@ -228,7 +229,7 @@ public class VideoActivity extends AppCompatActivity {
             public void run() {
                 //do something
                 try {
-//                    imageView.setImageBitmap(videoFrames.get(currentShowingFrameIndex));
+                    imageView.setImageBitmap(videoFrames.get(currentShowingFrameIndex));
                     currentShowingFrameIndex = (currentShowingFrameIndex + delay / frameDuration) % videoFrames.size();
                 } catch (Exception e) {
                     imageView.setImageResource(android.R.drawable.stat_notify_sync);
@@ -241,7 +242,7 @@ public class VideoActivity extends AppCompatActivity {
 
     public void init() {
         videoView = findViewById(R.id.videoView3);
-//        imageView = findViewById(R.id.imageView2);
+        imageView = findViewById(R.id.imageView2);
         textView = findViewById(R.id.textView);
         this.mediaController = new MediaController(this);
     }

@@ -112,7 +112,7 @@ public class GalleryActivity extends AppCompatActivity {
             udpHandler.setSquareContext(ImageHandler.bmpToArray(bitmap));
 
 //            setVideoFrames(localVideoFrames);
-            setTextView("Video Processing Finished");
+            setTextView("Image Processing Finished");
         }
     }
 
