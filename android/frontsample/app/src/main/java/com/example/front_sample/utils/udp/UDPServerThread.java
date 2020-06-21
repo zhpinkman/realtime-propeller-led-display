@@ -21,7 +21,6 @@ public class UDPServerThread extends Thread {
     private DatagramSocket socket;
     private boolean running;
     private UDPHandler udpHandlerParent;
-    private int frameDuration = 500;
     private InetAddress boardAddress;
 
     UDPServerThread(int androidPort, int boardPort, UDPHandler udpHandlerParent) {
@@ -75,10 +74,10 @@ public class UDPServerThread extends Thread {
     }
 
     public void sendPictureImmediately(int[][] angularFrame) throws Exception {
-        System.out.println(Arrays.toString(angularFrame[0]));
+//        System.out.println(Arrays.toString(angularFrame[0]));
         byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame);
         Log.e(TAG, Arrays.toString(byteBuf));
-        byte[] prefix = this.preparePrefix(0, angularFrame.length, this.frameDuration);
+        byte[] prefix = this.preparePrefix(0, angularFrame.length, udpHandlerParent.getFrameDuration());
         if (this.boardAddress == null)
             throw new Exception("Not received any request from board yet to know it's address");
         this.sendDatagramPacket(byteBuf, this.boardAddress, prefix, FrameType.PICTURE);
@@ -114,10 +113,10 @@ public class UDPServerThread extends Thread {
                     if (requestedFramesCount > 0) {
                         for (int i = 0; i < requestedFramesCount; i++) {
                             int[][] angularFrame = udpHandlerParent.getCurrentFrame();
-                            System.out.println(Arrays.toString(angularFrame[0]));
+//                            System.out.println(Arrays.toString(angularFrame[0]));
                             byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame);
                             Log.e(TAG, Arrays.toString(byteBuf));
-                            byte[] prefix = this.preparePrefix(i, angularFrame.length, this.frameDuration);
+                            byte[] prefix = this.preparePrefix(i, angularFrame.length, udpHandlerParent.getFrameDuration());
                             this.sendDatagramPacket(byteBuf, address, prefix, FrameType.VIDEO);
 
                             if (!this.udpHandlerParent.nextFrame()) {

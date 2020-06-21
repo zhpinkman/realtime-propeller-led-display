@@ -109,14 +109,14 @@ public class UDPActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        if (udpHandler != null) {
-            try {
-                udpHandler.stopServer();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            udpHandler = null;
-        }
+//        if (udpHandler != null) {
+//            try {
+//                udpHandler.stopServer();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            udpHandler = null;
+//        }
         super.onStop();
     }
 

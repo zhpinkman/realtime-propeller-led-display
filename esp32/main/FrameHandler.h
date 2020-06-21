@@ -83,7 +83,10 @@ public:
             slowDownReceiving();
         } else {
             Serial.print("add as frame number -> ");
-            Serial.println(nextFrameToAddIndex());
+            Serial.print(nextFrameToAddIndex());
+            Serial.print(", Duration = ");
+            Serial.println(duration);
+            
             speedUpReceiving();
             frames[nextFrameToAddIndex()].constructFrame(frame, duration);
             framesArrLen++;

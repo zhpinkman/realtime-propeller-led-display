@@ -12,8 +12,9 @@ import java.util.List;
 public class UDPHandler {
     private static volatile UDPHandler instance = new UDPHandler();
     private UDPServerThread udpServerThread = null;
-    private List<int[][]> angularContext = new ArrayList<>();
+    private volatile List<int[][]> angularContext = new ArrayList<>();
     private String log = "";
+    private volatile int frameDuration = 500;
 
     private UDPHandler() {
         this.angularContext.add(new int[Config.MAX_DEGREE][Config.NUM_OF_LEDS]);
@@ -86,6 +87,17 @@ public class UDPHandler {
         newAngularContext.add(angularPic);
         this.angularContext = newAngularContext;
         sendPictureAsync(angularPic);
+    }
+
+    public synchronized void setFrameDuration(int frameDuration) throws Exception {
+        if(frameDuration < 10 || frameDuration > 5000) {
+            throw new Exception("10 < FrameDuration < 5000");
+        }
+        this.frameDuration = frameDuration;
+    }
+
+    public synchronized int getFrameDuration() {
+        return this.frameDuration;
     }
 
     private void sendPictureAsync(int[][] angularPic) {

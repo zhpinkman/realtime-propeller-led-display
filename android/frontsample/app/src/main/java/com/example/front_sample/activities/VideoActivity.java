@@ -89,6 +89,11 @@ public class VideoActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 outputDuration = 10 + progress;
                 outputSeekBarText.setText("" + outputDuration + " ms");
+                try {
+                    udpHandler.setFrameDuration(outputDuration);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -124,6 +129,11 @@ public class VideoActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        udpHandler.startServer();
+        super.onStart();
+    }
 
     public void onSend(View view) {
         Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
