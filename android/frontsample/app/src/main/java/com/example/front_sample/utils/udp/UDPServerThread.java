@@ -119,7 +119,7 @@ public class UDPServerThread extends Thread {
                             byte[] prefix = this.preparePrefix(i, angularFrame.length, udpHandlerParent.getFrameDuration());
                             this.sendDatagramPacket(byteBuf, address, prefix, FrameType.VIDEO);
 
-                            if (!this.udpHandlerParent.nextFrame()) {
+                            if (!this.udpHandlerParent.hasNextFrame()) {
                                 break;  // size of context is 1 and can't pop
                             }
                         }

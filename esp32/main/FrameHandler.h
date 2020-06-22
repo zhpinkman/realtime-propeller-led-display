@@ -48,7 +48,7 @@ private:
     Frame frames[MAX_FRAMES_ARRAY_LEN];
     int framesArrLen = 1;
     int currentFrameIndex = 0;
-    int receivingMaxWaitTime = 500;
+    int receivingMaxWaitTime = REQUESTING_FRAMES_INTERVAL;
 
     Timer *requestTimer, *frameTimer;
     UDPBroadcast *udpBroadcast;

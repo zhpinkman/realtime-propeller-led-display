@@ -15,6 +15,7 @@ public class UDPHandler {
     private volatile List<int[][]> angularContext = new ArrayList<>();
     private String log = "";
     private volatile int frameDuration = 500;
+    private int currentFrameIndex = 0;
 
     private UDPHandler() {
         this.angularContext.add(new int[Config.MAX_DEGREE][Config.NUM_OF_LEDS]);
@@ -45,21 +46,12 @@ public class UDPHandler {
     }
 
     public synchronized int[][] getCurrentFrame() {
-        return this.angularContext.get(0);
+        this.currentFrameIndex = (currentFrameIndex + 1) % this.angularContext.size();
+        return this.angularContext.get(currentFrameIndex);
     }
 
-    public synchronized boolean nextFrame() {
-        return this.popFirstAngularContext(); // returns false if context size is 1 and there's no next
-    }
-
-    public synchronized boolean popFirstAngularContext() {  // returns false if context size is 1
-        if (this.angularContext.size() > 1) {
-            this.angularContext.add(this.angularContext.get(0));  // repeat
-            this.angularContext.remove(0);
-            return true;
-        } else {
-            return false;
-        }
+    public synchronized boolean hasNextFrame() {
+        return this.angularContext.size() > 1;
     }
 
     public synchronized void setAngularContext(List<int[][]> newAngularContext) {  // Board won't show it immediately
@@ -90,7 +82,7 @@ public class UDPHandler {
     }
 
     public synchronized void appendSquareContext(int[][] squarePic) {
-        if(this.angularContext == null)
+        if (this.angularContext == null)
             this.angularContext = Collections.synchronizedList(new ArrayList<int[][]>());
         int[][] angularPic = ImageHandler.squareToAngular(squarePic);
         this.angularContext.add(angularPic);

@@ -67,7 +67,8 @@
 #define BOARD_PORT 9000
 #define ANDROID_PORT 9001
 
-#define MAX_NUM_OF_REQUESTING_FRAMES 5  // Receiving frames window size
+#define MAX_NUM_OF_REQUESTING_FRAMES 10  // Receiving frames window size
+#define REQUESTING_FRAMES_INTERVAL 1000  // minimum interval between 2 consecutive request
 
 #endif //DEFINES_H
 
