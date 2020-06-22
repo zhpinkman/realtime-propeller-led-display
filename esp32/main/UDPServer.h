@@ -114,8 +114,8 @@ public:
 
     void finalizeFrame(byte packetData[], int prefixLength, int packetLength, int frameDuration){
         digitalWrite(LED_BUILTIN, HIGH);
-        Serial.print("Finalizing F");
-        Serial.println(packetData[1]);
+//        Serial.print("Finalizing F");
+//        Serial.println(packetData[1]);
         if(doesPacketFitInFrame(packetLength - prefixLength)) {
             for(int i = 0; i < packetLength - prefixLength; i++) {
                 currentFrame[currentFramePixel / NUM_OF_LEDS][currentFramePixel % NUM_OF_LEDS] = packetData[i + prefixLength];
@@ -132,8 +132,8 @@ public:
 
     void finalizeImmediateFrame(byte packetData[], int prefixLength, int packetLength, int frameDuration){
         digitalWrite(LED_BUILTIN, HIGH);
-        Serial.print("Finalizing F Immediately");
-        Serial.println(packetData[1]);
+//        Serial.print("Finalizing F Immediately");
+//        Serial.println(packetData[1]);
         if(doesPacketFitInFrame(packetLength - prefixLength)) {
             for(int i = 0; i < packetLength - prefixLength; i++) {
                 currentFrame[currentFramePixel / NUM_OF_LEDS][currentFramePixel % NUM_OF_LEDS] = packetData[i + prefixLength];

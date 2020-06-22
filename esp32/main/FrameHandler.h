@@ -82,10 +82,10 @@ public:
         if (framesArrLen >= MAX_FRAMES_ARRAY_LEN) {
             slowDownReceiving();
         } else {
-            Serial.print("add as frame number -> ");
-            Serial.print(nextFrameToAddIndex());
-            Serial.print(", Duration = ");
-            Serial.println(duration);
+//            Serial.print("add as frame number -> ");
+//            Serial.print(nextFrameToAddIndex());
+//            Serial.print(", Duration = ");
+//            Serial.println(duration);
             
             speedUpReceiving();
             frames[nextFrameToAddIndex()].constructFrame(frame, duration);
@@ -96,7 +96,6 @@ public:
     }
 
     void addFrameImmediately(byte frame[MAX_DEGREE][NUM_OF_LEDS], int duration) {
-        Serial.print("add as frame number -> ");
         framesArrLen = 1;
         currentFrameIndex = 0;
         frames[0].constructFrame(frame, duration);
