@@ -71,6 +71,7 @@ public class PaintView extends View {
         backgroundColor = DEFAULT_BG_COLOR;
         paths.clear();
         invalidate();
+        editImage();
     }
 
     public void editImage(){
@@ -157,6 +158,7 @@ public class PaintView extends View {
             mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
             mX = x;
             mY = y;
+            editImage();
         }
     }
 
