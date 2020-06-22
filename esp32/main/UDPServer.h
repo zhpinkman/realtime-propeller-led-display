@@ -5,6 +5,8 @@
 #ifndef MAIN_UDPSERVER_H
 #define MAIN_UDPSERVER_H
 
+#define CONFIG_ARDUINO_UDP_RUNNING_CORE 0
+
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include "utils.h"

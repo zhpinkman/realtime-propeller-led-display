@@ -48,7 +48,7 @@ private:
     Frame frames[MAX_FRAMES_ARRAY_LEN];
     int framesArrLen = 1;
     int currentFrameIndex = 0;
-    int receivingMaxWaitTime = 1000;
+    int receivingMaxWaitTime = 500;
 
     Timer *requestTimer, *frameTimer;
     UDPBroadcast *udpBroadcast;
@@ -103,14 +103,17 @@ public:
     }
 
     void speedUpReceiving() {
-        this->receivingMaxWaitTime -= 10;
-        if (this->receivingMaxWaitTime < 100) {
-            this->receivingMaxWaitTime = 100;
-        }
+//        this->receivingMaxWaitTime -= 10;
+//        if (this->receivingMaxWaitTime < 100) {
+//            this->receivingMaxWaitTime = 100;
+//        }
     }
 
     void slowDownReceiving() {
-        this->receivingMaxWaitTime * 2;
+//        this->receivingMaxWaitTime * 2;
+//        if(this->receivingMaxWaitTime > 2000){
+//            this->receivingMaxWaitTime = 2000;
+//        }
     }
 
     void updateFrames() {
@@ -127,7 +130,9 @@ public:
 
         }
 
-        if (framesArrLen < 20 && requestTimer->getElapsedTime() > 1000) {
+        if (framesArrLen < 20 && requestTimer->getElapsedTime() > this->receivingMaxWaitTime) {
+//            Serial.print("receivingMaxWaitTime: ");
+//            Serial.println(this->receivingMaxWaitTime);
             requestTimer->start();
             requestNewFrames();
         }

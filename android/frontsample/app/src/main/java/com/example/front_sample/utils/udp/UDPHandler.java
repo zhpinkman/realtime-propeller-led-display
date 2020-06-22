@@ -90,7 +90,10 @@ public class UDPHandler {
     }
 
     public synchronized void appendSquareContext(int[][] squarePic) {
-        this.angularContext.add(squarePic);
+        if(this.angularContext == null)
+            this.angularContext = Collections.synchronizedList(new ArrayList<int[][]>());
+        int[][] angularPic = ImageHandler.squareToAngular(squarePic);
+        this.angularContext.add(angularPic);
     }
 
     public synchronized void setFrameDuration(int frameDuration) throws Exception {

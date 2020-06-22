@@ -267,7 +267,6 @@ public class VideoActivity extends AppCompatActivity {
             } catch (Exception e) {
                 System.out.println(Arrays.toString(e.getStackTrace()));
                 setTextView("Video Processing Failed");
-                return;
             }
 
         }
@@ -305,9 +304,8 @@ public class VideoActivity extends AppCompatActivity {
         });
     }
 
-    private synchronized void refreshImagePeriodically() {
+    private void refreshImagePeriodically() {
         final Handler handler = new Handler();
-        final int delay = 60; //milliseconds
         handler.postDelayed(new Runnable() {
             public void run() {
                 //do something
@@ -322,9 +320,14 @@ public class VideoActivity extends AppCompatActivity {
                 }
                 handler.postDelayed(this, outputDuration);
             }
-        }, delay);
+        }, outputDuration);
     }
 
+    @Override
+    protected void onStop() {
+        killOldProcess();
+        super.onStop();
+    }
 
     public void init() {
         videoView = findViewById(R.id.videoView3);
