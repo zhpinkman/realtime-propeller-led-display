@@ -19,6 +19,13 @@
         <activity android:name=".activities.VideoActivity"></activity>
         <activity android:name=".activities.UDPActivity" />
         <activity
+            android:name=".activities.CircularTextActivity"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity" />
+        </activity>
+        <activity
             android:name=".activities.GalleryActivity"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
@@ -39,6 +46,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
