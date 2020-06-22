@@ -21,7 +21,7 @@ public class ImageHandler {
         if (minimumDimension == height) {
             bitmap.getPixels(pixels, 0, minimumDimension, (width / 2 - height / 2), 0, minimumDimension, minimumDimension);
         } else {
-            bitmap.getPixels(pixels, 0, minimumDimension, (height / 2 - width / 2), 0, minimumDimension, minimumDimension);
+            bitmap.getPixels(pixels, 0, minimumDimension, 0, (height / 2 - width / 2), minimumDimension, minimumDimension);
         }
         Bitmap result = Bitmap.createBitmap(pixels, 0, minimumDimension, minimumDimension, minimumDimension, Bitmap.Config.ARGB_8888);
         return result;

@@ -22,6 +22,7 @@ public class UDPHandler {
     }
 
     public static UDPHandler getInstance() {
+        instance.startServer();
         return instance;
     }
 
