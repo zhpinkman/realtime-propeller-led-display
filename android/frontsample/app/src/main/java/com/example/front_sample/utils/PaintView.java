@@ -97,7 +97,7 @@ public class PaintView extends View {
                     }
                 }
                 if ( count > 0 )
-                    picArray[i][j] = 1;
+                    picArray[i][j] = 255;
             }
         udpHandler.setSquareContext(picArray);
     }
