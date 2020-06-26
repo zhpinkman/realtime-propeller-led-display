@@ -40,7 +40,7 @@ void setup() {
     digitalWrite(LED_BUILTIN, LOW);
 
     lightSensor = new LightSensor(LDR_SENSOR_PIN);
-    touchAttachInterrupt(T5, gotTouch, threshold);  // T5 = PIN D12
+    touchAttachInterrupt(T5, gotTouch, TOUCH_THRESHOLD);  // T5 = PIN D12
 
 }
 

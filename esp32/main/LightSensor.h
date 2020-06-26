@@ -21,14 +21,14 @@ public:
     void updateLight() {
         int lightVal = analogRead(sensorPin); // read the current light levels
 //        Serial.println(lightVal);
-        if (!isInLight && (lightVal - lightInit > 500)) {
+        if (!isInLight && (lightVal - lightInit > LDR_DIFFERENTIAL_THRESHOLD)) {
             long now = millis();
             if (now - oldTime > 60) {
                 loopTime = now - oldTime;
                 oldTime = now;
             }
         }
-        isInLight = (lightVal - lightInit > 500);
+        isInLight = (lightVal - lightInit > LDR_DIFFERENTIAL_THRESHOLD);
     }
 
     float getLoopTime() {

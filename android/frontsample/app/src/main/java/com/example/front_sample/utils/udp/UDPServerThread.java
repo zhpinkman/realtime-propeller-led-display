@@ -42,7 +42,7 @@ public class UDPServerThread extends Thread {
 
 
     private synchronized void sendDatagramPacket(byte[] byteBuf, InetAddress address, byte[] prefix, FrameType frameType) throws IOException {
-        Log.e(TAG, String.valueOf(byteBuf.length));
+        Log.v(TAG, String.valueOf(byteBuf.length));
         for (int packetIndex = 0; packetIndex < byteBuf.length; packetIndex += UDP_SIZE_LIMIT_BYTES) {
 //            Log.e(TAG, String.valueOf(packetIndex));
             if (packetIndex + UDP_SIZE_LIMIT_BYTES >= byteBuf.length) {
@@ -54,7 +54,7 @@ public class UDPServerThread extends Thread {
             }
             byte[] byteChunk = Arrays.copyOfRange(byteBuf, packetIndex, min(packetIndex + UDP_SIZE_LIMIT_BYTES, byteBuf.length));
             byteChunk = Utils.concatArrays(prefix, byteChunk);
-            Log.e(TAG, Arrays.toString(byteChunk));
+            Log.v(TAG, Arrays.toString(byteChunk));
             DatagramPacket packet = new DatagramPacket(byteChunk, byteChunk.length, address, this.boardPort);
             socket.send(packet);
         }
@@ -76,7 +76,7 @@ public class UDPServerThread extends Thread {
     public void sendPictureImmediately(int[][] angularFrame) throws Exception {
 //        System.out.println(Arrays.toString(angularFrame[0]));
         byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame);
-        Log.e(TAG, Arrays.toString(byteBuf));
+        Log.v(TAG, Arrays.toString(byteBuf));
         byte[] prefix = this.preparePrefix(0, angularFrame.length, udpHandlerParent.getFrameDuration());
         if (this.boardAddress == null)
             throw new Exception("Not received any request from board yet to know it's address");
@@ -93,7 +93,7 @@ public class UDPServerThread extends Thread {
             socket = new DatagramSocket(this.androidPort);
 
 //            updateState("UDP Server is running");
-            Log.e(TAG, "UDP Server is running");
+            Log.v(TAG, "UDP Server is running");
 
             while (running) {
                 byte[] buf = new byte[100];
@@ -115,11 +115,11 @@ public class UDPServerThread extends Thread {
                             int[][] angularFrame = udpHandlerParent.getCurrentFrame();
 //                            System.out.println(Arrays.toString(angularFrame[0]));
                             byte[] byteBuf = Utils.int2dArrToByteArr(angularFrame);
-                            Log.e(TAG, Arrays.toString(byteBuf));
+                            Log.v(TAG, Arrays.toString(byteBuf));
                             byte[] prefix = this.preparePrefix(i, angularFrame.length, udpHandlerParent.getFrameDuration());
                             this.sendDatagramPacket(byteBuf, address, prefix, FrameType.VIDEO);
 
-                            if (!this.udpHandlerParent.nextFrame()) {
+                            if (!this.udpHandlerParent.hasNextFrame()) {
                                 break;  // size of context is 1 and can't pop
                             }
                         }
@@ -129,7 +129,7 @@ public class UDPServerThread extends Thread {
                 }
             }
 
-            Log.e(TAG, "UDP Server ended");
+            Log.v(TAG, "UDP Server ended");
 
         } catch (Exception e) {
             udpHandlerParent.log(e.getMessage());

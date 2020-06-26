@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapRegionDecoder;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -38,7 +39,10 @@ import com.example.front_sample.utils.udp.UDPHandler;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 
 public class VideoActivity extends AppCompatActivity {
@@ -60,6 +64,7 @@ public class VideoActivity extends AppCompatActivity {
     private int currentShowingFrameIndex = 0;
     private volatile List<Bitmap> videoFrames = null;
     private volatile int frameDuration = 50;  //ms
+    private volatile boolean killVideoProcess = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,12 +149,12 @@ public class VideoActivity extends AppCompatActivity {
         startActivityForResult(photoPickerIntent, VIDEO_GALLERY_REQUEST);
     }
 
-    public synchronized void clearVideoFrames(){
-        if(videoFrames != null) {
+    public synchronized void clearVideoFrames() {
+        if (videoFrames != null) {
             List<Bitmap> oldVideoFrames = videoFrames;
             videoFrames.clear();
             videoFrames = null;
-            for (Bitmap bmp: oldVideoFrames) {
+            for (Bitmap bmp : oldVideoFrames) {
                 bmp.recycle();
             }
         }
@@ -163,6 +168,8 @@ public class VideoActivity extends AppCompatActivity {
         if (requestCode == VIDEO_GALLERY_REQUEST && resultCode == RESULT_OK) {
             Uri uri = data.getData();
             if (uri != null) {
+                setTextView("Killing old video process if exists...");
+                killOldProcess();
                 clearVideoFrames();
                 Runnable r = new VideoProcessRunnable(this, uri);
                 new Thread(r).start();
@@ -175,9 +182,21 @@ public class VideoActivity extends AppCompatActivity {
         }
     }
 
+    private void killOldProcess() {
+        this.killVideoProcess = true;
+        long startTime = System.currentTimeMillis();
+        while (killVideoProcess){
+            if(System.currentTimeMillis() - startTime > 2000){
+                this.killVideoProcess = false;
+                break;
+            }
+        }
+    }
+
     public class VideoProcessRunnable implements Runnable {
         private Context context;
         private Uri uri;
+
         public VideoProcessRunnable(Context context, Uri uri) {
             this.context = context;
             this.uri = uri;
@@ -189,12 +208,17 @@ public class VideoActivity extends AppCompatActivity {
 
             setTextView("Starting Video Processing...");
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-//            String path = getPathFromUri(context, uri);
+            String path = getPathFromUri(context, uri);
             retriever.setDataSource(context, uri);
 
+//            retrieveAndSendFramesAllAtOnce(retriever, sampleDuration);
+            retrieveAndSendFramesGradually(retriever, sampleDuration);
+        }
+
+        private void retrieveAndSendFramesAllAtOnce(MediaMetadataRetriever retriever, int frameDuration){  // Retrieve all frames and process them, then send all together
             setTextView("Retrieving Video Frames...");
             List<Bitmap> localVideoFrames;
-            localVideoFrames = VideoHandler.getVideoFrames(retriever, sampleDuration);
+            localVideoFrames = VideoHandler.getVideoFrames(retriever, frameDuration, context);
 
             setTextView("Cropping center...");
             localVideoFrames = VideoHandler.cropCenter(localVideoFrames);
@@ -206,14 +230,51 @@ public class VideoActivity extends AppCompatActivity {
             localVideoFrames = VideoHandler.toGrayscale(localVideoFrames);
 
             setTextView("Sending video to udp handler...");
-            udpHandler.setSquareContext(VideoHandler.bmpToArray(localVideoFrames));
+            List<int[][]> framesBrightnessList = VideoHandler.bmpToArray(localVideoFrames);
+            udpHandler.setSquareContext(framesBrightnessList.get(0));  // To remove old movie from board
+            udpHandler.setSquareContext(framesBrightnessList);
 
             setVideoFrames(localVideoFrames);
             setTextView("Video Processing Finished");
         }
+
+        private void retrieveAndSendFramesGradually(MediaMetadataRetriever retriever, int frameDuration) {  // Process each frame completely and send it to board
+            try {
+                String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                long duration = Long.parseLong(time);  //ms
+                for (int i = 0; i < duration; i += frameDuration) {
+                    if(killVideoProcess){
+                        killVideoProcess = false;
+                        break;
+                    }
+                    double value = i * 1000;
+                    System.out.println("Retrieving Video Frames " + i + "/" + duration + "ms");
+                    setTextView("Retrieving Video Frames " + i + "/" + duration + "ms");
+                    Bitmap frameBmp = retriever.getFrameAtTime((long) value,
+                            MediaMetadataRetriever.OPTION_CLOSEST);
+                    frameBmp = ImageHandler.cropCenter(frameBmp);
+                    frameBmp = ImageHandler.scaleBitmap(frameBmp, Config.VIDEO_SIZE, Config.VIDEO_SIZE);
+                    frameBmp = ImageHandler.toGrayscale(frameBmp);
+                    if (i == 0) {
+                        udpHandler.setSquareContext(ImageHandler.bmpToArray(frameBmp));  // To remove old movie from board
+                        clearVideoFrames();
+                    } else {
+                        udpHandler.appendSquareContext(ImageHandler.bmpToArray(frameBmp));
+                    }
+                    appendVideoFrames(frameBmp);  // For showing in the UI
+                }
+                setTextView("Video Processing Finished");
+            } catch (Exception e) {
+                System.out.println(Arrays.toString(e.getStackTrace()));
+                setTextView("Video Processing Failed");
+            }
+
+        }
+
     }
 
-    private void setTextView(final String text) {
+
+    public synchronized void setTextView(final String text) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -222,7 +283,7 @@ public class VideoActivity extends AppCompatActivity {
         });
     }
 
-    private synchronized void setVideoFrames(final List<Bitmap> newFrames){
+    private synchronized void setVideoFrames(final List<Bitmap> newFrames) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -232,23 +293,41 @@ public class VideoActivity extends AppCompatActivity {
         });
     }
 
-    private synchronized void refreshImagePeriodically() {
+    private synchronized void appendVideoFrames(final Bitmap newFrame) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(videoFrames == null)
+                    videoFrames = Collections.synchronizedList(new ArrayList<Bitmap>());
+                videoFrames.add(newFrame);
+            }
+        });
+    }
+
+    private void refreshImagePeriodically() {
         final Handler handler = new Handler();
-        final int delay = 1000; //milliseconds
         handler.postDelayed(new Runnable() {
             public void run() {
                 //do something
                 try {
-                    imageView.setImageBitmap(videoFrames.get(currentShowingFrameIndex));
-                    currentShowingFrameIndex = (currentShowingFrameIndex + delay / frameDuration) % videoFrames.size();
+                    Bitmap bmp = videoFrames.get(currentShowingFrameIndex);
+                    imageView.setImageBitmap(bmp);
+                    currentShowingFrameIndex = (currentShowingFrameIndex + 1) % videoFrames.size();
                 } catch (Exception e) {
+                    e.printStackTrace();
+                    currentShowingFrameIndex = 0;
                     imageView.setImageResource(android.R.drawable.stat_notify_sync);
                 }
-                handler.postDelayed(this, delay);
+                handler.postDelayed(this, outputDuration);
             }
-        }, delay);
+        }, outputDuration);
     }
 
+    @Override
+    protected void onStop() {
+        killOldProcess();
+        super.onStop();
+    }
 
     public void init() {
         videoView = findViewById(R.id.videoView3);

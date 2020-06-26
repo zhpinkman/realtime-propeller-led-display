@@ -28,6 +28,8 @@ import com.example.front_sample.utils.udp.UDPHandler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GalleryActivity extends AppCompatActivity {
@@ -73,11 +75,10 @@ public class GalleryActivity extends AppCompatActivity {
 //                    byte[] inputData = getBytes(inputStream);
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
+                    setUiImage(bitmap);
+
                     Runnable r = new GalleryActivity.GalleryProcessRunnable(bitmap);
                     new Thread(r).start();
-
-                    int[][] rgbValues = getRGBValues(bitmap);
-                    ((ImageView) findViewById(R.id.imageView)).setImageBitmap(bitmap);
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -85,6 +86,15 @@ public class GalleryActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private synchronized void setUiImage(final Bitmap newPic) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((ImageView) findViewById(R.id.imageView)).setImageBitmap(newPic);
+            }
+        });
     }
 
 
@@ -113,6 +123,7 @@ public class GalleryActivity extends AppCompatActivity {
 
 //            setVideoFrames(localVideoFrames);
             setTextView("Image Processing Finished");
+            setUiImage(bitmap);
         }
     }
 

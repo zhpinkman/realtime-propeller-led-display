@@ -48,7 +48,7 @@ private:
     Frame frames[MAX_FRAMES_ARRAY_LEN];
     int framesArrLen = 1;
     int currentFrameIndex = 0;
-    int receivingMaxWaitTime = 1000;
+    int receivingMaxWaitTime = REQUESTING_FRAMES_INTERVAL;
 
     Timer *requestTimer, *frameTimer;
     UDPBroadcast *udpBroadcast;
@@ -82,10 +82,10 @@ public:
         if (framesArrLen >= MAX_FRAMES_ARRAY_LEN) {
             slowDownReceiving();
         } else {
-            Serial.print("add as frame number -> ");
-            Serial.print(nextFrameToAddIndex());
-            Serial.print(", Duration = ");
-            Serial.println(duration);
+//            Serial.print("add as frame number -> ");
+//            Serial.print(nextFrameToAddIndex());
+//            Serial.print(", Duration = ");
+//            Serial.println(duration);
             
             speedUpReceiving();
             frames[nextFrameToAddIndex()].constructFrame(frame, duration);
@@ -96,7 +96,6 @@ public:
     }
 
     void addFrameImmediately(byte frame[MAX_DEGREE][NUM_OF_LEDS], int duration) {
-        Serial.print("add as frame number -> ");
         framesArrLen = 1;
         currentFrameIndex = 0;
         frames[0].constructFrame(frame, duration);
@@ -104,14 +103,17 @@ public:
     }
 
     void speedUpReceiving() {
-        this->receivingMaxWaitTime -= 10;
-        if (this->receivingMaxWaitTime < 100) {
-            this->receivingMaxWaitTime = 100;
-        }
+//        this->receivingMaxWaitTime -= 10;
+//        if (this->receivingMaxWaitTime < 100) {
+//            this->receivingMaxWaitTime = 100;
+//        }
     }
 
     void slowDownReceiving() {
-        this->receivingMaxWaitTime * 2;
+//        this->receivingMaxWaitTime * 2;
+//        if(this->receivingMaxWaitTime > 2000){
+//            this->receivingMaxWaitTime = 2000;
+//        }
     }
 
     void updateFrames() {
@@ -128,7 +130,9 @@ public:
 
         }
 
-        if (framesArrLen < 20 && requestTimer->getElapsedTime() > 1000) {
+        if (framesArrLen < 20 && requestTimer->getElapsedTime() > this->receivingMaxWaitTime) {
+//            Serial.print("receivingMaxWaitTime: ");
+//            Serial.println(this->receivingMaxWaitTime);
             requestTimer->start();
             requestNewFrames();
         }

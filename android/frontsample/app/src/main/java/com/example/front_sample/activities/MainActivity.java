@@ -41,4 +41,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onCircularTextActivity(View view) {
+        Intent intent = new Intent(this, CircularTextActivity.class);
+        startActivity(intent);
+    }
+
 }
