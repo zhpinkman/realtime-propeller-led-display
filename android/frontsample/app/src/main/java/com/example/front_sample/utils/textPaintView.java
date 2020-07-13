@@ -22,18 +22,10 @@ public class textPaintView extends View {
 
     private UDPHandler udpHandler = UDPHandler.getInstance();
     private Bitmap mBitmap;
-    private Bitmap circularBitmap;
-    private Canvas mCanvas;
-    private Paint drawPaint;
     private String textShown;
-    private int DEFAULT_HEIGHT = 90;
-    private int SPACING_DIST = 30;
-    private int circularBitmapWidth = 600;
+    private int Scale = 20;
     private Paint mBitmapPaint = new Paint(Paint.DITHER_FLAG);
-    private int finalWidth = circularBitmapWidth;
-    private int[][] picArray = new int[finalWidth][finalWidth];
-
-    private int[][][] Alphabet = new int[26][10][7];
+    int [][][] alphabet = new int[26][Config.ALPHABET_HEIGHT][Config.ALPHABET_LENGTH];
 
     public textPaintView(Context context) {
         this(context, null);
@@ -41,45 +33,350 @@ public class textPaintView extends View {
 
     public textPaintView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        drawPaint = new Paint();
-        drawPaint.setColor(Color.BLACK);
-        drawPaint.setAntiAlias(true);
-        drawPaint.setStrokeWidth(5);
-        drawPaint.setStyle(Paint.Style.STROKE);
-        drawPaint.setStrokeJoin(Paint.Join.ROUND);
-        drawPaint.setStrokeCap(Paint.Cap.ROUND);
-
-        //font setting
-        drawPaint.setTextSize(100f);
-        Typeface plain = Typeface.createFromAsset(getContext().getAssets(), "fonts/cmunbtl.ttf");
-        drawPaint.setTypeface(plain);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if ( textShown == null) textShown = "";
-        mCanvas.drawColor(Color.WHITE);
-        mCanvas.drawText(textShown, 0, 65f, drawPaint);
-        stretchBitmap();
-        makeCircular();
-        previewBitmap(circularBitmap);
-        canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
-        canvas.drawBitmap(circularBitmap, (mBitmap.getWidth() - circularBitmapWidth) / 2 , DEFAULT_HEIGHT + SPACING_DIST, mBitmapPaint);
+        if ( textShown == null)
+            textShown = "";
+        if ( textShown.length() > 0 ) {
+            char lastChar = textShown.charAt(textShown.length() - 1);
+            if ('a' <= lastChar && lastChar <= 'z')
+                setText(lastChar - 'a');
+            if ('A' <= lastChar && lastChar <= 'Z')
+                setText(lastChar - 'A');
+        }
+        //previewBitmap(circularBitmap);
+        canvas.drawBitmap(mBitmap, (mBitmap.getWidth() - Scale*Config.ALPHABET_LENGTH) / 2, 0, mBitmapPaint);
     }
 
-    private void stretchBitmap() {
-        int w = mBitmap.getWidth();
-        int h = mBitmap.getHeight();
-        int[][] bitmapArray = new int[w][h];
-        for (int i = 0 ; i < w ; i++)
-            for (int j = 0; j < h; j++)
-                bitmapArray[i][j] = mBitmap.getPixel(i,j);
+    private void setText(int c){
 
-        for ( int i = 0 ; i < w ; i++ ) {
-            for (int j = 0; j < h; j++) {
-                mBitmap.setPixel(i, j, bitmapArray[i/2][j]);
-            }
-        }
+        int w = mBitmap.getWidth();
+        for (int i = 0 ; i < Scale*Config.ALPHABET_HEIGHT  ; i++)
+            for (int j = 0 ; j < Scale*Config.ALPHABET_LENGTH ; j++)
+                mBitmap.setPixel(j,i,Color.WHITE);
+
+        for ( int i = 0 ; i < Scale*Config.ALPHABET_HEIGHT ; i++ )
+            for ( int j = 0 ; j < Scale*Config.ALPHABET_LENGTH ; j++ )
+                if ( alphabet[c][i/Scale][j/Scale] == 1 ) {
+                    mBitmap.setPixel(j, i, Color.BLACK);
+                }
+
+    }
+
+    private void setAlphabet(){
+        //a
+        alphabet[0] = new int[][]  {{0, 0, 1, 0, 0},
+                                    {0, 1, 0, 1, 0},
+                                    {1, 0, 0, 0, 1},
+                                    {1, 0, 0, 0, 1},
+                                    {1, 1, 1, 1, 1},
+                                    {1, 0, 0, 0, 1},
+                                    {1, 0, 0, 0, 1},
+                                    {0, 0, 0, 0, 0},
+                                    {0, 0, 0, 0, 0},
+                                    {0, 0, 0, 0, 0}};
+
+        //b
+        alphabet[1] = new int[][]  {{1,1,1,1,0},
+                                    {1,0,0,0,1},
+                                    {1,0,0,0,1},
+                                    {1,1,1,1,0},
+                                    {1,0,0,0,1},
+                                    {1,0,0,0,1},
+                                    {1,1,1,1,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0} };
+
+        //c
+        alphabet[2] = new int[][]  {{0,1,1,1,0},
+                                    {1,0,0,0,1},
+                                    {1,0,0,0,0},
+                                    {1,0,0,0,0},
+                                    {1,0,0,0,0},
+                                    {1,0,0,0,1},
+                                    {0,1,1,1,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0} };
+
+        //d
+        alphabet[3] = new int[][]  {{1,1,1,1,0},
+                                    {1,0,0,0,1},
+                                    {1,0,0,0,1},
+                                    {1,0,0,0,1},
+                                    {1,0,0,0,1},
+                                    {1,0,0,0,1},
+                                    {1,1,1,1,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0} };
+
+        //e
+        alphabet[4] = new int[][]  {{1,1,1,1,1},
+                                    {1,0,0,0,0},
+                                    {1,0,0,0,0},
+                                    {1,1,1,1,0},
+                                    {1,0,0,0,0},
+                                    {1,0,0,0,0},
+                                    {1,1,1,1,1},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0} };
+
+        //f
+        alphabet[5] = new int[][]  {{1,1,1,1,1},
+                                    {1,0,0,0,0},
+                                    {1,0,0,0,0},
+                                    {1,1,1,1,0},
+                                    {1,0,0,0,0},
+                                    {1,0,0,0,0},
+                                    {1,0,0,0,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0} };
+
+        //g
+        alphabet[6] = new int[][]  {{0,1,1,1,1},
+                                    {1,0,0,0,0},
+                                    {1,0,0,0,0},
+                                    {1,0,0,0,0},
+                                    {1,0,0,1,1},
+                                    {1,0,0,0,1},
+                                    {0,1,1,1,1},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0} };
+
+        //h
+        alphabet[7] = new int[][]  {{1,0,0,0,1},
+                                    {1,0,0,0,1},
+                                    {1,0,0,0,1},
+                                    {1,1,1,1,1},
+                                    {1,0,0,0,1},
+                                    {1,0,0,0,1},
+                                    {1,0,0,0,1},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0} };
+
+        //i
+        alphabet[8] = new int[][]  {{0,1,1,1,0},
+                                    {0,0,1,0,0},
+                                    {0,0,1,0,0},
+                                    {0,0,1,0,0},
+                                    {0,0,1,0,0},
+                                    {0,0,1,0,0},
+                                    {0,1,1,1,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0} };
+
+        //j
+        alphabet[9] = new int[][] {{0,0,0,0,1},
+                                    {0,0,0,0,1},
+                                    {0,0,0,0,1},
+                                    {0,0,0,0,1},
+                                    {0,0,0,0,1},
+                                    {1,0,0,0,1},
+                                    {0,1,1,1,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0},
+                                    {0,0,0,0,0} };
+
+        //k
+        alphabet[10] = new int[][]  {{1,0,0,0,1},
+                {1,0,0,1,0},
+                {1,0,1,0,0},
+                {1,1,0,0,0},
+                {1,0,1,0,0},
+                {1,0,0,1,0},
+                {1,0,0,0,1},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //l
+        alphabet[11] = new int[][]  {{1,0,0,0,0},
+                {1,0,0,0,0},
+                {1,0,0,0,0},
+                {1,0,0,0,0},
+                {1,0,0,0,0},
+                {1,0,0,0,0},
+                {1,1,1,1,1},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //m
+        alphabet[12] = new int[][]  {{1,0,0,0,1},
+                {1,1,0,1,1},
+                {1,0,1,0,1},
+                {1,0,1,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //n
+        alphabet[13] = new int[][]  {{1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,1,0,0,1},
+                {1,0,1,0,1},
+                {1,0,0,1,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //o
+        alphabet[14] = new int[][]  {{0,1,1,1,0},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {0,1,1,1,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //p
+        alphabet[15] = new int[][]  {{1,1,1,1,0},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,1,1,1,0},
+                {1,0,0,0,0},
+                {1,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //q
+        alphabet[16] = new int[][]  {{0,1,1,1,0},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,1,0,1},
+                {1,0,0,1,0},
+                {0,1,1,0,1},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //r
+        alphabet[17] = new int[][]  {{1,1,1,1,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,1,1,1,0},
+                {1,0,1,0,0},
+                {1,0,0,1,0},
+                {1,0,0,0,1},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //s
+        alphabet[18] = new int[][]  {{0,1,1,1,0},
+                {1,0,0,0,1},
+                {1,0,0,0,0},
+                {0,1,1,1,0},
+                {0,0,0,0,1},
+                {1,0,0,0,1},
+                {1,1,1,1,1},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //t
+        alphabet[19] = new int[][]  {{1,1,1,1,1},
+                {0,0,1,0,0},
+                {0,0,1,0,0},
+                {0,0,1,0,0},
+                {0,0,1,0,0},
+                {0,0,1,0,0},
+                {0,0,1,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //u
+        alphabet[20] = new int[][]  {{1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {0,1,1,1,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //v
+        alphabet[21] = new int[][]  {{1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {0,1,0,1,0},
+                {0,0,1,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //w
+        alphabet[22] = new int[][]  {{1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {1,0,1,0,1},
+                {1,0,1,0,1},
+                {1,1,0,1,1},
+                {1,0,0,0,1},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //x
+        alphabet[23] = new int[][]  {{1,0,0,0,1},
+                {1,0,0,0,1},
+                {0,1,0,1,0},
+                {0,0,1,0,0},
+                {0,1,0,1,0},
+                {1,0,0,0,1},
+                {1,0,0,0,1},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //y
+        alphabet[24] = new int[][]  {{1,0,0,0,1},
+                {1,0,0,0,1},
+                {0,1,1,1,0},
+                {0,0,1,0,0},
+                {0,0,1,0,0},
+                {0,0,1,0,0},
+                {0,0,1,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
+
+        //z
+        alphabet[25] = new int[][]  {{1,1,1,1,1},
+                {0,0,0,0,1},
+                {0,0,0,1,0},
+                {0,0,1,0,0},
+                {0,1,0,0,0},
+                {1,0,0,0,0},
+                {1,1,1,1,1},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0} };
     }
 
     private void previewBitmap(Bitmap tmp){
@@ -116,61 +413,37 @@ public class textPaintView extends View {
 
     }
 
-    private void makeCircular(){
-        int w = circularBitmapWidth;
-        int h = mBitmap.getHeight();
-        double minRad = 0.2;
-
-        for ( int i = 0 ; i < w ; i++ )
-            for ( int j = 0 ; j < w ; j++ )
-            {
-                int x = i - w/2;
-                int y = j - w/2;
-                double deg = 0;
-                double rad = 0 ;
-                int x2 = 0;
-                int y2 = 0;
-
-                rad = Math.sqrt(x*x + y*y) / (w/2);
-                if ( rad >= 1 ) continue;
-                if ( rad <= minRad ) continue ;
-
-                if ( x == 0 && y >= 0)
-                    deg = 0;
-                else if ( x == 0 && y < 0 )
-                    deg = Math.PI;
-                else
-                    deg = Math.atan2(y,x);
-
-                deg = deg / (2*Math.PI);
-                if ( deg < 0 ) deg += 1;
-
-                x2 = (int) (deg * mBitmap.getWidth());
-                y2 = (int) (((rad - minRad) * h) / (1 - minRad));
-                int color = mBitmap.getPixel(x2, mBitmap.getHeight() - y2 - 1);
-                circularBitmap.setPixel(w - i, w - j,color);
-            }
-    }
-
     public void init(DisplayMetrics metrics) {
         int width = metrics.widthPixels;
-        int height = DEFAULT_HEIGHT;
+        int height = width;
         setAlphabet();
         mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        circularBitmap = Bitmap.createBitmap(circularBitmapWidth, circularBitmapWidth, Bitmap.Config.ARGB_8888);
-        mCanvas = new Canvas(mBitmap);
+    }
+
+    private int getAlphabet(int c, int x, int y)
+    {
+
+        return alphabet[c][y][x];
     }
 
     public void editAndSend(){
-        int w = circularBitmap.getWidth() ;
-        int h = circularBitmap.getHeight();
+        int[][] sendData = new int[Config.NUM_OF_LEDS][Config.MAX_DEGREE];
+        int filled = 0;
+        for (char ch: textShown.toCharArray()) {
+            int c = -1;
+            if ('a' <= ch && ch <= 'z')
+                c = ch - 'a';
+            if ('A' <= ch && ch <= 'Z')
+                c = ch - 'A';
+            if (c < 0 || c > 25) continue;
 
-        for (int i = 0; i < finalWidth; i++)
-            for (int j = 0; j < finalWidth; j++) {
-                if ( circularBitmap.getPixel(i,j) == Color.BLACK )
-                    picArray[i][j] = 255;
-            }
-        //udpHandler.setSquareContext(picArray);
+            for (int i = 0; i < Config.ALPHABET_LENGTH; i++)
+                for (int j = 0; j < Config.ALPHABET_HEIGHT; j++) {
+                    sendData[j][filled + i] = getAlphabet(c, i, j);
+                }
+            filled += Config.ALPHABET_LENGTH + 1;
+        }
+        udpHandler.setAngularContext(sendData);
     }
 
     public void foo(final String text) {

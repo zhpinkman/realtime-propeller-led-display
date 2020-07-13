@@ -10,4 +10,7 @@ public class Config {
 
     public static final int VIDEO_SIZE = 128;
     public static final int IMAGE_SIZE = 128;
+
+    public static final int ALPHABET_LENGTH = 5;
+    public static final int ALPHABET_HEIGHT = 10;
 }
