@@ -13,20 +13,27 @@
         android:layout_weight=".40"
         android:gravity="center"
         android:inputType="text"
-        android:maxLength="20"
+        android:maxLength="12"
         android:maxLines="1"
-        app:layout_constraintTop_toBottomOf="@id/textPaintView"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="638dp" />
+        app:layout_constraintBottom_toTopOf="@+id/textPaintView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="-16dp" />
 
     <com.example.front_sample.utils.textPaintView
         android:id="@+id/textPaintView"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="400dp"
         android:background="#C8B7CA"
-        app:layout_constraintBottom_toTopOf="@+id/textBox"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textBox"
         app:layout_constraintVertical_bias="0.0"
         tools:layout_editor_absoluteX="0dp" />
+
+    <TextView
+        android:id="@+id/text_view_id"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textPaintView"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:text="Preview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

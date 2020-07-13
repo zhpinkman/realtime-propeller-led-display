@@ -23,6 +23,8 @@ public class textPaintView extends View {
     private UDPHandler udpHandler = UDPHandler.getInstance();
     private Bitmap mBitmap;
     private String textShown;
+    private Canvas mCanvas;
+    private Paint mPaint;
     private int Scale = 20;
     private Paint mBitmapPaint = new Paint(Paint.DITHER_FLAG);
     int [][][] alphabet = new int[26][Config.ALPHABET_HEIGHT][Config.ALPHABET_LENGTH];
@@ -33,21 +35,30 @@ public class textPaintView extends View {
 
     public textPaintView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
+        mPaint = new Paint();
+        mPaint.setColor(Color.WHITE);
+        mPaint.setAntiAlias(true);
+        mPaint.setStrokeWidth(5);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setStyle(Paint.Style.FILL);
 
+    }
     @Override
     protected void onDraw(Canvas canvas) {
         if ( textShown == null)
             textShown = "";
+        /*
         if ( textShown.length() > 0 ) {
             char lastChar = textShown.charAt(textShown.length() - 1);
             if ('a' <= lastChar && lastChar <= 'z')
                 setText(lastChar - 'a');
             if ('A' <= lastChar && lastChar <= 'Z')
                 setText(lastChar - 'A');
-        }
+        }*/
         //previewBitmap(circularBitmap);
-        canvas.drawBitmap(mBitmap, (mBitmap.getWidth() - Scale*Config.ALPHABET_LENGTH) / 2, 0, mBitmapPaint);
+        canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
     }
 
     private void setText(int c){
@@ -418,12 +429,13 @@ public class textPaintView extends View {
         int height = width;
         setAlphabet();
         mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        mCanvas = new Canvas(mBitmap);
+        mCanvas.drawColor(Color.BLACK);
     }
 
     private int getAlphabet(int c, int x, int y)
     {
-
-        return alphabet[c][y][x];
+        return alphabet[c][Config.ALPHABET_HEIGHT - y - 1][x];
     }
 
     public void editAndSend(){
@@ -435,14 +447,30 @@ public class textPaintView extends View {
                 c = ch - 'a';
             if ('A' <= ch && ch <= 'Z')
                 c = ch - 'A';
-            if (c < 0 || c > 25) continue;
+            if (0 <= c && c <= 25) {
+                for (int i = 0; i < Config.ALPHABET_LENGTH; i++)
+                    for (int j = 0; j < Config.ALPHABET_HEIGHT; j++) {
+                        sendData[j][(filled + i) * 5] = getAlphabet(c, i, j);
+                    }
+            }
 
-            for (int i = 0; i < Config.ALPHABET_LENGTH; i++)
-                for (int j = 0; j < Config.ALPHABET_HEIGHT; j++) {
-                    sendData[j][filled + i] = getAlphabet(c, i, j);
-                }
             filled += Config.ALPHABET_LENGTH + 1;
         }
+        mCanvas.drawColor(Color.BLACK);
+        double r = mBitmap.getWidth() / 2;
+        for (int degree = 0; degree < 360; degree++) {
+            double baseX = Math.cos(Math.toRadians(degree)) * (double) r / (double) Config.NUM_OF_LEDS;
+            double baseY = Math.sin(Math.toRadians(degree)) * (double) r / (double) Config.NUM_OF_LEDS;
+            for (int i = 0; i < Config.NUM_OF_LEDS; i++) {
+                int x = (int) (Math.floor(baseX * i) + r);
+                int y = (int) (Math.floor(baseY * i) + r);
+                if ( sendData[i][359 - degree] == 1)
+                {
+                    mCanvas.drawCircle(y, x, 10, mPaint);
+                }
+            }
+        }
+
         udpHandler.setAngularContext(sendData);
     }
 
