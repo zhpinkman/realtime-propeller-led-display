@@ -453,8 +453,17 @@ public class textPaintView extends View {
             if (0 <= c && c <= 25) {
                 for (int i = 0; i < Config.ALPHABET_LENGTH; i++)
                     for (int j = 0; j < Config.ALPHABET_HEIGHT; j++) {
-                        sendData[j][(filled + i) * 5] = getAlphabet(c, i, j);
-                        showOnboard[(filled + i) * 5][j] = sendData[j][(filled + i) * 5] ;
+                        sendData[j][(filled + i) * 5 + 0] = getAlphabet(c, i, j);
+                        sendData[j][(filled + i) * 5 + 1] = getAlphabet(c, i, j);
+                        sendData[j][(filled + i) * 5 + 2] = getAlphabet(c, i, j);
+                        sendData[j][(filled + i) * 5 + 3] = getAlphabet(c, i, j);
+                        sendData[j][(filled + i) * 5 + 4] = getAlphabet(c, i, j);
+
+                        showOnboard[(filled + i) * 5 + 0][j] = sendData[j][(filled + i) * 5];
+                        showOnboard[(filled + i) * 5 + 1][j] = sendData[j][(filled + i) * 5];
+                        showOnboard[(filled + i) * 5 + 2][j] = sendData[j][(filled + i) * 5];
+                        showOnboard[(filled + i) * 5 + 3][j] = sendData[j][(filled + i) * 5];
+                        showOnboard[(filled + i) * 5 + 4][j] = sendData[j][(filled + i) * 5];
                     }
             }
 
