@@ -454,6 +454,7 @@ public class textPaintView extends View {
                 for (int i = 0; i < Config.ALPHABET_LENGTH; i++)
                     for (int j = 0; j < Config.ALPHABET_HEIGHT; j++) {
                         sendData[j][(filled + i) * 5] = getAlphabet(c, i, j);
+                        showOnboard[(filled + i) * 5][j] = sendData[j][(filled + i) * 5] ;
                     }
             }
 
