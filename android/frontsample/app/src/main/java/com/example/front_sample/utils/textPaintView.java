@@ -470,7 +470,6 @@ public class textPaintView extends View {
                 int y = (int) (Math.floor(baseY * i) + r);
                 if ( sendData[i][359 - degree] != 0)
                 {
-                    showOnboard[359 - degree][i] = 255;
                     mCanvas.drawCircle(y, x, 10, mPaint);
                 }
             }
