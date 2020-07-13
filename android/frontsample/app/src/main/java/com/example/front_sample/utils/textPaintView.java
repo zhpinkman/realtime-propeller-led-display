@@ -6,17 +6,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
-
-import java.io.File;
 import java.lang.Math;
-import java.io.FileOutputStream;
 
+import com.example.front_sample.config.Config;
 import com.example.front_sample.utils.udp.UDPHandler;
 
 public class textPaintView extends View {
@@ -27,12 +26,14 @@ public class textPaintView extends View {
     private Canvas mCanvas;
     private Paint drawPaint;
     private String textShown;
-    private int DEFAULT_HEIGHT = 120;
+    private int DEFAULT_HEIGHT = 90;
     private int SPACING_DIST = 30;
     private int circularBitmapWidth = 600;
     private Paint mBitmapPaint = new Paint(Paint.DITHER_FLAG);
     private int finalWidth = circularBitmapWidth;
     private int[][] picArray = new int[finalWidth][finalWidth];
+
+    private int[][][] Alphabet = new int[26][10][7];
 
     public textPaintView(Context context) {
         this(context, null);
@@ -58,23 +59,73 @@ public class textPaintView extends View {
     protected void onDraw(Canvas canvas) {
         if ( textShown == null) textShown = "";
         mCanvas.drawColor(Color.WHITE);
-        mCanvas.drawText(textShown, 0, 90f, drawPaint);
+        mCanvas.drawText(textShown, 0, 65f, drawPaint);
+        stretchBitmap();
         makeCircular();
+        previewBitmap(circularBitmap);
         canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
         canvas.drawBitmap(circularBitmap, (mBitmap.getWidth() - circularBitmapWidth) / 2 , DEFAULT_HEIGHT + SPACING_DIST, mBitmapPaint);
+    }
+
+    private void stretchBitmap() {
+        int w = mBitmap.getWidth();
+        int h = mBitmap.getHeight();
+        int[][] bitmapArray = new int[w][h];
+        for (int i = 0 ; i < w ; i++)
+            for (int j = 0; j < h; j++)
+                bitmapArray[i][j] = mBitmap.getPixel(i,j);
+
+        for ( int i = 0 ; i < w ; i++ ) {
+            for (int j = 0; j < h; j++) {
+                mBitmap.setPixel(i, j, bitmapArray[i/2][j]);
+            }
+        }
+    }
+
+    private void previewBitmap(Bitmap tmp){
+        int w = tmp.getWidth();
+        int h = tmp.getHeight();
+        int[][] bitmapArray = new int[w][h];
+        int[][] bitmapFinal = new int[w][h];
+        for (int i = 0 ; i < w ; i++)
+            for (int j = 0; j < h; j++) {
+                bitmapArray[i][j] = tmp.getPixel(i, j);
+                bitmapFinal[i][j] = 0;
+            }
+
+        for (int degree = 0; degree < 360; degree++) {
+            double baseX = Math.cos(Math.toRadians(degree)) * (double) w / 2 / (double) Config.NUM_OF_LEDS;
+            double baseY = Math.sin(Math.toRadians(degree)) * (double) w / 2 / (double) Config.NUM_OF_LEDS;
+            for (int i = 0; i < Config.NUM_OF_LEDS; i++) {
+                int x = (int) (Math.floor(baseX * i) + w / 2);
+                int y = (int) (Math.floor(baseY * i) + w / 2);
+                bitmapFinal[y][x] = bitmapArray[y][x];
+
+                for (int dx = -4; dx <= 4; dx++)
+                    for (int dy = -4 ; dy <= 4 ; dy++)
+                    {
+                        bitmapFinal[dy + y][dx + x] = bitmapArray[y][x];
+                    }
+            }
+        }
+        for ( int i = 0 ; i < w ; i++ ) {
+            for (int j = 0; j < h; j++) {
+                tmp.setPixel(i, j, bitmapFinal[i][j]);
+            }
+        }
+
     }
 
     private void makeCircular(){
         int w = circularBitmapWidth;
         int h = mBitmap.getHeight();
-        //int alignToMid = mBitmap.getWidth()/2 - w/2;
+        double minRad = 0.2;
 
         for ( int i = 0 ; i < w ; i++ )
             for ( int j = 0 ; j < w ; j++ )
             {
                 int x = i - w/2;
                 int y = j - w/2;
-                double minRad = 0.5;
                 double deg = 0;
                 double rad = 0 ;
                 int x2 = 0;
@@ -104,7 +155,7 @@ public class textPaintView extends View {
     public void init(DisplayMetrics metrics) {
         int width = metrics.widthPixels;
         int height = DEFAULT_HEIGHT;
-
+        setAlphabet();
         mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         circularBitmap = Bitmap.createBitmap(circularBitmapWidth, circularBitmapWidth, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
@@ -119,7 +170,7 @@ public class textPaintView extends View {
                 if ( circularBitmap.getPixel(i,j) == Color.BLACK )
                     picArray[i][j] = 255;
             }
-        udpHandler.setSquareContext(picArray);
+        //udpHandler.setSquareContext(picArray);
     }
 
     public void foo(final String text) {
