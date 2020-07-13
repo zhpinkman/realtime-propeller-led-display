@@ -435,7 +435,9 @@ public class textPaintView extends View {
 
     private int getAlphabet(int c, int x, int y)
     {
-        return alphabet[c][Config.ALPHABET_HEIGHT - y - 1][x];
+        if ( alphabet[c][Config.ALPHABET_HEIGHT - y - 1][x] == 1 )
+            return 255;
+        return 0;
     }
 
     public void editAndSend(){
@@ -464,7 +466,7 @@ public class textPaintView extends View {
             for (int i = 0; i < Config.NUM_OF_LEDS; i++) {
                 int x = (int) (Math.floor(baseX * i) + r);
                 int y = (int) (Math.floor(baseY * i) + r);
-                if ( sendData[i][359 - degree] == 1)
+                if ( sendData[i][359 - degree] != 0)
                 {
                     mCanvas.drawCircle(y, x, 10, mPaint);
                 }
