@@ -442,6 +442,7 @@ public class textPaintView extends View {
 
     public void editAndSend(){
         int[][] sendData = new int[Config.NUM_OF_LEDS][Config.MAX_DEGREE];
+        int[][] showOnboard = new int[Config.MAX_DEGREE][Config.NUM_OF_LEDS];
         int filled = 0;
         for (char ch: textShown.toCharArray()) {
             int c = -1;
@@ -468,12 +469,13 @@ public class textPaintView extends View {
                 int y = (int) (Math.floor(baseY * i) + r);
                 if ( sendData[i][359 - degree] != 0)
                 {
+                    showOnboard[359 - degree][i] = 255;
                     mCanvas.drawCircle(y, x, 10, mPaint);
                 }
             }
         }
 
-        udpHandler.setAngularContext(sendData);
+        udpHandler.setAngularContext(showOnboard);
     }
 
     public void foo(final String text) {
