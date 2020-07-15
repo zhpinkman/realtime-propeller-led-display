@@ -7,6 +7,7 @@ private:
     int oldTime = 0;
     int loopTime = 0;
     bool isInLight = false;
+    
 
 public:
     LightSensor(int _sensorPin) {

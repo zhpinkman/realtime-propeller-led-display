@@ -79,7 +79,7 @@ public class UDPHandler {
         int[][] angularPic = ImageHandler.squareToAngular(squarePic);
         newAngularContext.add(angularPic);
         this.angularContext = newAngularContext;
-        sendPictureAsync(angularPic);
+        sendPictureAsync(angularPic);  // android.os.NetworkOnMainThreadException if you run this on this thread
     }
 
     public synchronized void appendSquareContext(int[][] squarePic) {

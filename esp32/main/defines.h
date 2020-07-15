@@ -50,9 +50,9 @@
 #define LED_BUILTIN 2
 
 #define TOUCH_THRESHOLD 40
-#define LDR_DIFFERENTIAL_THRESHOLD 400
+#define LDR_DIFFERENTIAL_THRESHOLD 300
 #define PI 3.14159265
-#define MAX_BRIGHTNESS 255  // 0 <= <= 255
+#define MAX_BRIGHTNESS 2  // 0 <= <= 255
 #define BRIGHTNESS_STEPS 255  // 1 <= <= 255
 #define BRIGHTNESS_CHANGE_FACTOR 3  // pow of value (brightness change factor difference in dark and bright values)
 
@@ -68,7 +68,7 @@
 #define ANDROID_PORT 9001
 
 #define MAX_NUM_OF_REQUESTING_FRAMES 10  // Receiving frames window size
-#define REQUESTING_FRAMES_INTERVAL 1000  // minimum interval between 2 consecutive request
+#define REQUESTING_FRAMES_INTERVAL 5000  // minimum interval between 2 consecutive request
 
 #endif //DEFINES_H
 

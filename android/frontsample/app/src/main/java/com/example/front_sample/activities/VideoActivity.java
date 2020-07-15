@@ -211,8 +211,8 @@ public class VideoActivity extends AppCompatActivity {
             String path = getPathFromUri(context, uri);
             retriever.setDataSource(context, uri);
 
-//            retrieveAndSendFramesAllAtOnce(retriever, sampleDuration);
-            retrieveAndSendFramesGradually(retriever, sampleDuration);
+            retrieveAndSendFramesAllAtOnce(retriever, sampleDuration);
+//            retrieveAndSendFramesGradually(retriever, sampleDuration);
         }
 
         private void retrieveAndSendFramesAllAtOnce(MediaMetadataRetriever retriever, int frameDuration){  // Retrieve all frames and process them, then send all together

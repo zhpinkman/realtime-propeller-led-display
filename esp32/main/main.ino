@@ -24,7 +24,7 @@ void gotTouch() {
 
 
 
-
+//UDPBroadcast *udpBroadcast;
 void setup() {
     Serial.begin(115200);
     pinMode(LED_BUILTIN, OUTPUT);
@@ -42,26 +42,27 @@ void setup() {
     lightSensor = new LightSensor(LDR_SENSOR_PIN);
     touchAttachInterrupt(T5, gotTouch, TOUCH_THRESHOLD);  // T5 = PIN D12
 
+//    udpBroadcast = new UDPBroadcast();
 }
 
+long oldLoopTime = 0;
 void loop() {
     frameHandler->updateFrames();
     lightSensor->updateLight();
     long loopTime = lightSensor->getLoopTime();
     long currentTimeInLoop = lightSensor->getCurrentTimeInLoop();
+    leds->setLedsByAngularFrame(currentTimeInLoop, loopTime, frameHandler->getCurrentFrame(), frameHandler->getCurrentFrameAngleAccuracy());
     // set the brightness on LEDC channel 0
 //    int brightness = 0;
 //    if (currentTimeInLoop % (int(loopTime / 4) + 1) == 0) {
 //        brightness = 10;
 //    }
 
-    leds->setLedsByAngularFrame(currentTimeInLoop, loopTime, frameHandler->getCurrentFrame(), frameHandler->getCurrentFrameAngleAccuracy());
-//    for(int i = 0; i < NUM_OF_LEDS; i++){
-//      ledcAnalogWrite(ledChannels[i], brightness);
-//    }
-//    udpHandler->broadcast(String(lightSensor->getLoopTime()));
-//    delay(1000);
-
 //      Serial.print("LoopCore: ");
 //      Serial.println(xPortGetCoreID());
+
+//    if(abs(oldLoopTime - loopTime) > 0){
+//        udpBroadcast->broadcast(String("loop Time:") + String(loopTime) + String("ms"));
+//        oldLoopTime = loopTime;
+//    }
 }
